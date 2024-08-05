@@ -1,8 +1,8 @@
-from sqlalchemy import Column, UUID, String, Text, DECIMAL, Enum, Integer, ForeignKey
-from .enums import MenuCategory
-from uuid import uuid4
 from ..base import Base
 from .mixins import Timestamp
+from sqlalchemy import Column, UUID, String, Text, DECIMAL, Enum, Integer, ForeignKey
+from uuid import uuid4
+from .enums import MenuCategory
 from sqlalchemy.orm import relationship
 
 
@@ -28,7 +28,7 @@ class Review(Base, Timestamp):
 
     id = Column(UUID, default=uuid4, primary_key=True)
     message = Column(Text())
-    rating = Column(Integer)
+    rating = Column(Integer) # validate for a range of 1 to 5 in the front-end
 
     menu_id = Column(ForeignKey("menu.id"))
     customer_id = Column(ForeignKey("customer.id"))
