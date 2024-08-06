@@ -12,7 +12,7 @@ class Order(Base, Timestamp):
     id = Column(UUID, default=uuid4, primary_key=True)
     amount = Column(DECIMAL)
     customer_id = Column(ForeignKey("customers.id"))
-    status = Column(Enum(OrderStatus, name="order_status"))
+    status = Column(Enum(OrderStatus, name="order_status"), default=OrderStatus.PENDING)
 
     customer = relationship("Customer", back_populates="orders")
     items = relationship("Menu", secondary=order_menu_association, back_populates="orders")
