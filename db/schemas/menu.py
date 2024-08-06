@@ -1,11 +1,12 @@
 from pydantic import BaseModel
 from models.enums import MenuCategory
 from uuid import UUID
+from decimal import Decimal
 
 class MenuBase(BaseModel):
     name: str
     description: str
-    price: float
+    price: Decimal
     category: MenuCategory
 
 class MenuCreate(MenuBase):
