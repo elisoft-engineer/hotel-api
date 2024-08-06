@@ -8,7 +8,7 @@ class NotificationBase(BaseModel):
 
 
 class NotificationCreate(NotificationBase):
-    user_id: UUID
+    user_id: UUID # Update this later in accordance to the model
 
 
 """
