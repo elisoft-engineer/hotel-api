@@ -13,7 +13,7 @@ class Menu(Base, Timestamp):
     name = Column(String, index=True)
     description = Column(Text())
     price = Column(DECIMAL)
-    category = Column(Enum(MenuCategory, name="menu_category"))
+    category = Column(Enum(MenuCategory, name="menu_category"), default=MenuCategory.OTHER)
     image = Column(String, nullable=True)
     thumbnail = Column(String, nullable=True)
 
