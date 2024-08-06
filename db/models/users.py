@@ -1,6 +1,6 @@
 from ..base import Base
 from .mixins import Timestamp
-from sqlalchemy import Column, UUID, String, Boolean, Integer
+from sqlalchemy import Column, UUID, String, Boolean
 from sqlalchemy.orm import declarative_mixin, relationship
 from uuid import uuid4
 
@@ -12,7 +12,7 @@ manage both the admins and customers.
 
 
 @declarative_mixin
-class User(Base, Timestamp):
+class User():
     __abstract__ = True
 
     id = Column(UUID, primary_key=True, default=uuid4)
@@ -21,12 +21,12 @@ class User(Base, Timestamp):
     is_active = Column(Boolean, default=True)
 
 
-class Admin(User):
-    employee_id = Column(Integer)
+class Admin(Base, User, Timestamp):
+    employee_id = Column(String, index=True)
     # the employee id can be used as an alternative for authentication
 
 
-class Customer(User):
+class Customer(Base, User, Timestamp):
     __tablename__ = "users"
 
     first_name = Column(String, nullable=True)
