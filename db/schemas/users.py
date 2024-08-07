@@ -16,7 +16,7 @@ class AdminCreate(AdminBase):
     password: str
 
 
-class AdminLogin(AbstractUser):
+class AdminSignin(AbstractUser):
     password: str
 
 
@@ -41,7 +41,7 @@ class CustomerCreate(CustomerBase):
     password: str
 
 
-class CustomerLogin(CustomerBase):
+class CustomerSignin(CustomerBase):
     password: str
 
 
