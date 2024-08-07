@@ -20,6 +20,8 @@ class User():
     password = Column(String)
     is_active = Column(Boolean, default=True)
 
+    # Add the notification relationship
+
 
 class Admin(Base, User, Timestamp):
     employee_id = Column(String, index=True)
