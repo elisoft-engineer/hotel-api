@@ -1,7 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from uuid import UUID
-from db.models import notifications as models, enums
+from db.models import notifications as models
+from db.models.enums import NotificationStatus
 from db.schemas import notifications as schemas
 
 
@@ -21,7 +22,7 @@ async def get_user_unread_notifications(
     offset: int | None = None,
     limit: int | None = None
 ):
-    results = await db.execute(select(models.Notification).where(models.Notification.user_id == user_id and models.Notification.status == enums.NotificationStatus.UNREAD).offset(offset).limit(limit))
+    results = await db.execute(select(models.Notification).where(models.Notification.user_id == user_id and models.Notification.status == NotificationStatus.UNREAD).offset(offset).limit(limit))
     return results.scalars().all()
 
 
@@ -31,7 +32,7 @@ async def get_user_read_notifications(
     offset: int | None = None,
     limit: int | None = None
 ):
-    results = await db.execute(select(models.Notification).where(models.Notification.user_id == user_id and models.Notification.status == enums.NotificationStatus.READ).offset(offset).limit(limit))
+    results = await db.execute(select(models.Notification).where(models.Notification.user_id == user_id and models.Notification.status == NotificationStatus.READ).offset(offset).limit(limit))
     return results.scalars().all()
 
 
@@ -54,7 +55,7 @@ async def mark_notification_as_read(db: AsyncSession, id: UUID):
     if not notification:
         return None
     
-    setattr(notification, "status", enums.NotificationStatus.READ)
+    setattr(notification, "status", NotificationStatus.READ)
     db.add(notification)
     await db.commit()
     await db.refresh(notification)
@@ -65,7 +66,7 @@ async def mark_all_notifications_as_read(db: AsyncSession, user_id: UUID):
     unread_notifications = get_user_unread_notifications(db, user_id)
 
     for notification in unread_notifications:
-        setattr(notification, "status", enums.NotificationStatus.READ)
+        setattr(notification, "status", NotificationStatus.READ)
         db.add(notification)
         await db.commit()
         await db.refresh(notification)
