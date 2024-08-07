@@ -21,6 +21,11 @@ async def get_admin(db: AsyncSession, id: UUID):
     return result.scalars().first()
 
 
+async def get_admin_by_email(db: AsyncSession, email: str):
+    result = await db.execute(select(models.Admin).where(models.Admin.email == email))
+    return result.scalars().first()
+
+
 async def create_admin(db: AsyncSession, admin: schemas.AdminCreate):
     admin_data = admin.model_dump()
     admin_data['password'] = get_password_hash(admin.password)
@@ -69,6 +74,11 @@ async def get_customers(db: AsyncSession, offset: int | None = None, limit: int 
 
 async def get_customer(db: AsyncSession, id: UUID):
     result = await db.execute(select(models.Customer).where(models.Customer.id == id))
+    return result.scalars().first()
+
+
+async def get_customer_by_email(db: AsyncSession, email: str):
+    result = await db.execute(select(models.Customer).where(models.Customer.email == email))
     return result.scalars().first()
 
 
