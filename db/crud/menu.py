@@ -54,7 +54,7 @@ async def delete_menu(db: AsyncSession, menu_id: UUID):
 
     await db.delete(menu)
     await db.commit()
-    return {"message": "Menu item deleted successfully"}
+    return {"detail": "Menu item deleted successfully"}
 
 
 # These are the CRUD utilities for reviews
@@ -63,11 +63,6 @@ async def get_reviews(db: AsyncSession, menu_id: UUID, offset: int | None = None
     results = await db.execute(
         select(models.Review).where(models.Review.menu_id == menu_id).offset(offset).limit(limit))
     return results.scalars().all()
-
-
-async def review_belongs_to_menu(db: AsyncSession, menu_id: UUID, review_id: UUID) -> bool:
-    menu_item = await get_menu_item(db, menu_id)
-    return review_id in menu_item.reviews
 
 
 async def get_review(db: AsyncSession, review_id: UUID):
@@ -106,4 +101,4 @@ async def delete_review(db: AsyncSession, review_id: UUID):
 
     await db.delete(review)
     await db.commit()
-    return {"message": "Review deleted successfully"}
+    return {"detail": "Review deleted successfully"}

@@ -37,4 +37,4 @@ async def delete_message(db: AsyncSession, message_id: UUID):
     
     await db.delete(message)
     await db.commit()
-    return {"message": "Message deleted successfully"}
+    return {"detail": "Message deleted successfully"}

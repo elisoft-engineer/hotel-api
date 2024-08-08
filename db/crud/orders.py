@@ -53,4 +53,4 @@ async def delete_order(db: AsyncSession, order_id: UUID):
     
     await db.delete(order)
     await db.commit()
-    return {"message": "Order deleted successfully"}
+    return {"detail": "Order deleted successfully"}

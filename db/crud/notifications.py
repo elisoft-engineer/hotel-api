@@ -65,7 +65,7 @@ async def mark_notification_as_read(db: AsyncSession, notification_id: UUID):
     db.add(notification)
     await db.commit()
     await db.refresh(notification)
-    return {"message": "Notification read successfully"}
+    return {"detail": "Notification read successfully"}
 
 
 async def mark_all_notifications_as_read(db: AsyncSession, user_id: UUID):
@@ -77,4 +77,4 @@ async def mark_all_notifications_as_read(db: AsyncSession, user_id: UUID):
         await db.commit()
         await db.refresh(notification)
 
-    return {"message": "Notifications read successfully"}
+    return {"detail": "Notifications read successfully"}

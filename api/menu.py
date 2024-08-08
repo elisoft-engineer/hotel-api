@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from db.session import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.crud.menu import get_menu, get_menu_item, update_menu, delete_menu, get_reviews, get_review, \
-    create_review, update_review, delete_review, review_belongs_to_menu
+    create_review, update_review, delete_review
 from db.schemas.menu import Menu, MenuUpdate, Review, ReviewCreate, ReviewUpdate
 from typing import List
 from uuid import UUID
@@ -34,7 +34,7 @@ async def create_new_menu_item(
     db_menu = await create_menu(db, menu)
     if not db_menu:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating account")
-    return {"message": "Menu item created successfully"}
+    return {"detail": "Menu item created successfully"}
 """
 
 
@@ -87,12 +87,38 @@ async def create_new_review(review: ReviewCreate, db: AsyncSession = Depends(get
     db_review = await create_review(db, review)
     if not db_review:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating review")
-    return {"message": "Review created successfully"}
+    return {"detail": "Review created successfully"}
 
 
 @router.get("/{menu_id}/reviews/{review_id}", response_model=Review, status_code=status.HTTP_200_OK)
 async def read_review(menu_id: UUID, review_id: UUID, db: AsyncSession = Depends(get_db)):
-    if not review_belongs_to_menu(db, menu_id, review_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Review not found")
     review = await get_review(db, review_id)
-    
+    if not review:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Review not found")
+    if menu_id != review.menu_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error in the details")
+    return review
+
+
+@router.put("/{menu_id}/reviews/{review_id}", response_model=Review, status_code=status.HTTP_200_OK)
+async def update_review_info(
+        menu_id: UUID, review_id: UUID, review_update: ReviewUpdate, db: AsyncSession = Depends(get_db)
+):
+    review = await get_review(db, review_id)
+    if not review or review.menu_id != menu_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Wrong review id or menu id")
+    updated_review = await update_review(db, review_id, review_update)
+    if not updated_review:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Review not found")
+    return updated_review
+
+
+@router.delete("/{menu_id}/reviews/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_review_info(menu_id: UUID, review_id: UUID, db: AsyncSession = Depends(get_db)):
+    review = await get_review(db, review_id)
+    if not review or review.menu_id != menu_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Wrong review id or menu id")
+    result = await delete_review(db, review_id)
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Review not found")
+    return result

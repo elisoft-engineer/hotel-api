@@ -57,7 +57,7 @@ async def delete_admin(db: AsyncSession, admin_id: UUID):
 
     await db.delete(admin)
     await db.commit()
-    return {"message": "Admin account deleted successfully"}
+    return {"detail": "Admin account deleted successfully"}
 
 
 """
@@ -112,4 +112,4 @@ async def delete_customer(db: AsyncSession, customer_id: UUID):
 
     await db.delete(customer)
     await db.commit()
-    return {"message": "Customer account deleted successfully"}
+    return {"detail": "Customer account deleted successfully"}

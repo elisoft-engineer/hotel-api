@@ -27,7 +27,7 @@ async def create_new_customer(customer: CustomerCreate, db: AsyncSession = Depen
     if not db_customer:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating account")
 
-    return {"message": "Account created successfully"}
+    return {"detail": "Account created successfully"}
 
 
 @router.post("/signin", status_code=status.HTTP_200_OK, response_model=Token)
@@ -58,7 +58,7 @@ async def create_new_admin(admin: AdminCreate, db: AsyncSession = Depends(get_db
             detail="Error creating account"
         )
 
-    return {"message": "Account created successfully"}
+    return {"detail": "Account created successfully"}
 
 
 @router.post("/signin/admin", response_model=Token, status_code=status.HTTP_200_OK)
