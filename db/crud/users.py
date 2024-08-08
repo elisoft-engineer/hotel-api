@@ -5,7 +5,6 @@ from db.models import users as models
 from db.schemas import users as schemas
 from core.security import get_password_hash
 
-
 """
 The following are the admin CRUD utilities
 """
@@ -16,8 +15,8 @@ async def get_admins(db: AsyncSession, offset: int | None = None, limit: int | N
     return results.scalars().all()
 
 
-async def get_admin(db: AsyncSession, id: UUID):
-    result = await db.execute(select(models.Admin).where(models.Admin.id == id))
+async def get_admin(db: AsyncSession, admin_id: UUID):
+    result = await db.execute(select(models.Admin).where(models.Admin.id == admin_id))
     return result.scalars().first()
 
 
@@ -36,15 +35,14 @@ async def create_admin(db: AsyncSession, admin: schemas.AdminCreate):
     return db_admin
 
 
-async def update_admin(db: AsyncSession, id: UUID, admin_update: schemas.AdminUpdate):
-    admin = await get_admin(db, id)
+async def update_admin(db: AsyncSession, admin_id: UUID, admin_update: schemas.AdminUpdate):
+    admin = await get_admin(db, admin_id)
     if not admin:
         return None
-    
+
     update_data = admin_update.model_dump(exclude_unset=True)
     for key, value in update_data:
         setattr(admin, key, value)
-
 
     db.add(admin)
     await db.commit()
@@ -52,11 +50,11 @@ async def update_admin(db: AsyncSession, id: UUID, admin_update: schemas.AdminUp
     return admin
 
 
-async def delete_admin(db: AsyncSession, id: UUID):
-    admin = await get_admin(db, id)
+async def delete_admin(db: AsyncSession, admin_id: UUID):
+    admin = await get_admin(db, admin_id)
     if not admin:
         return None
-    
+
     await db.delete(admin)
     await db.commit()
     return {"message": "Admin account deleted successfully"}
@@ -72,8 +70,8 @@ async def get_customers(db: AsyncSession, offset: int | None = None, limit: int 
     return results.scalars().all()
 
 
-async def get_customer(db: AsyncSession, id: UUID):
-    result = await db.execute(select(models.Customer).where(models.Customer.id == id))
+async def get_customer(db: AsyncSession, customer_id: UUID):
+    result = await db.execute(select(models.Customer).where(models.Customer.id == customer_id))
     return result.scalars().first()
 
 
@@ -92,15 +90,14 @@ async def create_customer(db: AsyncSession, customer: schemas.CustomerCreate):
     return db_customer
 
 
-async def update_customer(db: AsyncSession, id: UUID, customer_update: schemas.CustomerUpdate):
-    customer = await get_customer(db, id)
+async def update_customer(db: AsyncSession, customer_id: UUID, customer_update: schemas.CustomerUpdate):
+    customer = await get_customer(db, customer_id)
     if not customer:
         return None
-    
+
     update_data = customer_update.model_dump(exclude_unset=True)
     for key, value in update_data:
         setattr(customer, key, value)
-
 
     db.add(customer)
     await db.commit()
@@ -108,11 +105,11 @@ async def update_customer(db: AsyncSession, id: UUID, customer_update: schemas.C
     return customer
 
 
-async def delete_customer(db: AsyncSession, id: UUID):
-    customer = await get_customer(db, id)
+async def delete_customer(db: AsyncSession, customer_id: UUID):
+    customer = await get_customer(db, customer_id)
     if not customer:
         return None
-    
+
     await db.delete(customer)
     await db.commit()
     return {"message": "Customer account deleted successfully"}

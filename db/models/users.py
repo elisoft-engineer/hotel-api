@@ -12,7 +12,7 @@ manage both the admins and customers.
 
 
 @declarative_mixin
-class User():
+class User:
     __abstract__ = True
 
     id = Column(UUID, primary_key=True, default=uuid4)

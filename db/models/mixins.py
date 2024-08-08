@@ -9,10 +9,10 @@ have the Timestamp class and then have it subclassed by all the models for
 better code.
 """
 
+
 @declarative_mixin
 class Timestamp:
     __abstract__ = True
 
     created_at = Column(DateTime(timezone=True), default=func.now())
     modified_at = Column(DateTime(timezone=True), default=func.now())
-    

@@ -6,6 +6,7 @@ from .enums import OrderStatus
 from sqlalchemy.orm import relationship
 from .assotiations import order_menu_association
 
+
 class Order(Base, Timestamp):
     __tablename__ = "orders"
 

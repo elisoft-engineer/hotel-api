@@ -3,6 +3,7 @@ from .mixins import Timestamp
 from sqlalchemy import Column, UUID, String, Text
 from uuid import uuid4
 
+
 class Message(Base, Timestamp):
     __tablename__ = "messages"
 
@@ -12,4 +13,4 @@ class Message(Base, Timestamp):
     detail = Column(Text)
 
     def __repr__(self):
-        return self.email
+        return self.name

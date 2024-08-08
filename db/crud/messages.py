@@ -10,14 +10,14 @@ async def get_messages(db: AsyncSession, offset: int | None = None, limit: int |
     return results.scalars().all()
 
 
-async def get_message(db: AsyncSession, id: UUID):
-    result = await db.execute(select(models.Message).where(models.Message.id == id))
+async def get_message(db: AsyncSession, message_id: UUID):
+    result = await db.execute(select(models.Message).where(models.Message.id == message_id))
     return result.scalars().first()
 
 
 async def create_message(db: AsyncSession, message: schemas.MessageCreate):
     message_data = message.model_dump()
-    db_message = models.message(**message_data)
+    db_message = models.Message(**message_data)
     db.add(db_message)
     await db.commit()
     await db.refresh(db_message)
@@ -30,8 +30,8 @@ only sent and do not need to be updated, only read
 """
 
 
-async def delete_message(db: AsyncSession, id: UUID):
-    message = await get_message(db, id)
+async def delete_message(db: AsyncSession, message_id: UUID):
+    message = await get_message(db, message_id)
     if not message:
         return None
     

@@ -28,7 +28,7 @@ class Review(Base, Timestamp):
 
     id = Column(UUID, default=uuid4, primary_key=True)
     message = Column(Text())
-    rating = Column(Integer) # validate for a range of 1 to 5 in the front-end
+    rating = Column(Integer)  # validate for a range of 1 to 5 in the front-end
 
     menu_id = Column(ForeignKey("menu.id"))
     customer_id = Column(ForeignKey("customer.id"))

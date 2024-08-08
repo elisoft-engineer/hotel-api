@@ -17,12 +17,14 @@ async def get_customer_orders(
     offset: int | None = None,
     limit: int | None = None
 ):
-    results = await db.execute(select(models.Order).where(models.Order.customer_id == customer_id).offset(offset).limit(limit))
+    results = await db.execute(
+        select(models.Order).where(models.Order.customer_id == customer_id).offset(offset).limit(limit)
+    )
     return results.scalars().all()
 
 
-async def get_order(db: AsyncSession, id: UUID):
-    result = await db.execute(select(models.Order).where(models.Order.id == id))
+async def get_order(db: AsyncSession, order_id: UUID):
+    result = await db.execute(select(models.Order).where(models.Order.id == order_id))
     return result.scalars().first()
 
 
@@ -32,8 +34,8 @@ async def create_order(db: AsyncSession, order: schemas.OrderCreate):
 
 
 # The update crud only updates the order status
-async def update_order(db: AsyncSession, id: UUID, order_status: OrderStatus):
-    order = await get_order(db, id)
+async def update_order(db: AsyncSession, order_id: UUID, order_status: OrderStatus):
+    order = await get_order(db, order_id)
     if not order:
         return None
     
@@ -44,8 +46,8 @@ async def update_order(db: AsyncSession, id: UUID, order_status: OrderStatus):
     return order
 
 
-async def delete_order(db: AsyncSession, id: UUID):
-    order = await get_order(db, id)
+async def delete_order(db: AsyncSession, order_id: UUID):
+    order = await get_order(db, order_id)
     if not order:
         return None
     
