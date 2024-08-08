@@ -1,7 +1,8 @@
 from pydantic import BaseModel
-from models.enums import MenuCategory
+from db.models.enums import MenuCategory
 from uuid import UUID
 from decimal import Decimal
+
 
 class MenuBase(BaseModel):
     name: str
@@ -9,12 +10,14 @@ class MenuBase(BaseModel):
     price: Decimal
     category: MenuCategory
 
+
 class MenuCreate(MenuBase):
     image: str
-    thumbnail: str
+
 
 class MenuUpdate(MenuBase):
     pass
+
 
 class Menu(MenuBase):
     id: UUID
@@ -24,16 +27,20 @@ class Menu(MenuBase):
     class Config:
         from_attributes = True
 
+
 class ReviewBase(BaseModel):
     message: str
     rating: int
+
 
 class ReviewCreate(ReviewBase):
     menu_id: UUID
     customer_id: UUID
 
+
 class ReviewUpdate(ReviewBase):
     pass
+
 
 class Review(ReviewBase):
     id: UUID

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 # Handle the token data schema later
 
 # class TokenData(BaseModel):

@@ -58,5 +58,3 @@ class Customer(CustomerBase):
     notifications: List[Notification] = []
 
     from_attributes = True
-
-
