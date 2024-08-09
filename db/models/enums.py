@@ -6,6 +6,11 @@ for menu items.
 """
 
 
+class UserType(str, Enum):
+    ADMIN = "admin"
+    CUSTOMER = "customer"
+
+
 class MenuCategory(str, Enum):
     MAIN_COURSES = "main_courses"
     DRINKS = "drinks"
