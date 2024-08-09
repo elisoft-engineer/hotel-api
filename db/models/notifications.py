@@ -10,7 +10,8 @@ class Notification(Base, Timestamp):
 
     id = Column(UUID, default=uuid4, primary_key=True)
     message = Column(String)
-    user_id = Column(UUID)  # to store the id of any kind of user
+    user_id = Column(UUID)
+    user_type = 
     status = Column(Enum(NotificationStatus, name="notification_status"), default=NotificationStatus.UNREAD)
 
     def __repr__(self):
