@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from uuid import UUID
-from db.models.enums import NotificationStatus
+from db.models.enums import NotificationStatus, UserType
 
 
 class NotificationBase(BaseModel):
@@ -8,7 +8,8 @@ class NotificationBase(BaseModel):
 
 
 class NotificationCreate(NotificationBase):
-    user_id: UUID  # Update this later in accordance to the model
+    user_id: UUID
+    user_type: UserType
 
 
 """
