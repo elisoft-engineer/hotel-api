@@ -6,12 +6,7 @@ from db.models.enums import NotificationStatus
 from db.schemas import notifications as schemas
 
 
-async def get_user_notifications(
-    db: AsyncSession,
-    user_id: UUID,
-    offset: int | None = None,
-    limit: int | None = None
-):
+async def get_user_notifications(db: AsyncSession, user_id: UUID, offset: int | None = None, limit: int | None = None):
     results = await db.execute(
         select(models.Notification).where(models.Notification.user_id == user_id).offset(offset).limit(limit)
     )
@@ -19,10 +14,7 @@ async def get_user_notifications(
 
 
 async def get_user_unread_notifications(
-    db: AsyncSession,
-    user_id: UUID,
-    offset: int | None = None,
-    limit: int | None = None
+        db: AsyncSession, user_id: UUID, offset: int | None = None, limit: int | None = None
 ):
     results = await db.execute(
         select(models.Notification).where(models.Notification.user_id == user_id and models.Notification.status == NotificationStatus.UNREAD).offset(offset).limit(limit)
@@ -78,3 +70,13 @@ async def mark_all_notifications_as_read(db: AsyncSession, user_id: UUID):
         await db.refresh(notification)
 
     return {"detail": "Notifications read successfully"}
+
+
+async def delete_notification(db: AsyncSession, notification_id: UUID):
+    notification = get_notification(db, notification_id)
+    if not notification:
+        return None
+
+    await db.delete(notification)
+    await db.commit()
+    return {"detail": "Notification deleted successfully"}
