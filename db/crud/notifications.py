@@ -6,31 +6,24 @@ from db.models.enums import NotificationStatus
 from db.schemas import notifications as schemas
 
 
-async def get_user_notifications(db: AsyncSession, user_id: UUID, offset: int | None = None, limit: int | None = None):
-    results = await db.execute(
-        select(models.Notification).where(models.Notification.user_id == user_id).offset(offset).limit(limit)
-    )
-    return results.scalars().all()  # Look up how to order the status
-
-
-async def get_user_unread_notifications(
-        db: AsyncSession, user_id: UUID, offset: int | None = None, limit: int | None = None
+async def get_notifications(
+        db: AsyncSession,
+        user_id: UUID,
+        notification_status: str | None = None,
+        offset: int | None = None,
+        limit: int | None = None
 ):
-    results = await db.execute(
-        select(models.Notification).where(models.Notification.user_id == user_id and models.Notification.status == NotificationStatus.UNREAD).offset(offset).limit(limit)
-    )
-    return results.scalars().all()
-
-
-async def get_user_read_notifications(
-    db: AsyncSession,
-    user_id: UUID,
-    offset: int | None = None,
-    limit: int | None = None
-):
-    results = await db.execute(
-        select(models.Notification).where(models.Notification.user_id == user_id and models.Notification.status == NotificationStatus.READ).offset(offset).limit(limit)
-    )
+    # in case a notification status is parsed
+    if notification_status and notification_status in [status.value for status in NotificationStatus]:
+        results = await db.execute(
+            select(models.Notification).where(
+                models.Notification.user_id == user_id and models.Notification.status == notification_status).offset(
+                offset).limit(limit)
+        )
+    else:  # return all the notifications associated with the user
+        results = await db.execute(
+            select(models.Notification).where(models.Notification.user_id == user_id).offset(offset).limit(limit)
+        )
     return results.scalars().all()
 
 
@@ -53,7 +46,7 @@ async def mark_notification_as_read(db: AsyncSession, notification_id: UUID):
     if not notification:
         return None
     
-    setattr(notification, "status", NotificationStatus.READ)
+    setattr(notification, "status", NotificationStatus.READ.value)
     db.add(notification)
     await db.commit()
     await db.refresh(notification)
@@ -61,10 +54,10 @@ async def mark_notification_as_read(db: AsyncSession, notification_id: UUID):
 
 
 async def mark_all_notifications_as_read(db: AsyncSession, user_id: UUID):
-    unread_notifications = get_user_unread_notifications(db, user_id)
+    unread_notifications = get_notifications(db, user_id, notification_status=NotificationStatus.UNREAD.value)
 
     for notification in unread_notifications:  # confirm about the unread_notifications sequence
-        setattr(notification, "status", NotificationStatus.READ)
+        setattr(notification, "status", NotificationStatus.READ.value)
         db.add(notification)
         await db.commit()
         await db.refresh(notification)
