@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from db.models.enums import MenuCategory
 from uuid import UUID
 from decimal import Decimal
 
@@ -8,7 +7,7 @@ class MenuBase(BaseModel):
     name: str
     description: str
     price: Decimal
-    category: MenuCategory
+    category: str
 
 
 class MenuCreate(MenuBase):

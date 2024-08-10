@@ -3,17 +3,15 @@ from uuid import UUID
 from typing import List
 from decimal import Decimal
 from .menu import Menu
-from db.models.enums import OrderStatus
 
 
 class OrderBase(BaseModel):
-    amount: Decimal
     customer_id: UUID
-    items: List[Menu] = []
+
 
 
 class OrderCreate(OrderBase):
-    pass
+    item_ids: List[UUID]
 
 
 """
@@ -24,7 +22,9 @@ be changed is the status of the order
 
 class Order(OrderBase):
     id: UUID
-    status: OrderStatus
+    status: str
+    items: List[Menu] = []
+    amount: Decimal
 
     class Config:
         from_attributes = True

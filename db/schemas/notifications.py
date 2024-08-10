@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from uuid import UUID
-from db.models.enums import NotificationStatus, UserType
 
 
 class NotificationBase(BaseModel):
@@ -9,7 +8,7 @@ class NotificationBase(BaseModel):
 
 class NotificationCreate(NotificationBase):
     user_id: UUID
-    user_type: UserType
+    user_type: str
 
 
 """
@@ -20,7 +19,7 @@ For the Update schema, we only need to update the status
 class Notification(NotificationBase):
     id: UUID
     user_id: UUID
-    status: NotificationStatus
+    status: str
 
     class Config:
         from_attributes = True
