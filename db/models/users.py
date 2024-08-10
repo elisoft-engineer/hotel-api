@@ -1,6 +1,7 @@
 from ..base import Base
 from .mixins import Timestamp
 from sqlalchemy import Column, UUID, String, Boolean
+from .enums import UserType
 from sqlalchemy.orm import declarative_mixin, relationship
 from uuid import uuid4
 
@@ -25,6 +26,7 @@ class User:
 
 class Admin(Base, User, Timestamp):
     employee_id = Column(String, index=True)
+    user_type = Column(String, nullable=False, default=UserType.ADMIN.value)
     # the employee id can be used as an alternative for authentication
 
 
@@ -33,6 +35,7 @@ class Customer(Base, User, Timestamp):
 
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
+    user_type = Column(String, nullable=False, default=UserType.CUSTOMER.value)
 
     reviews = relationship("Review", back_populates="customer")
 

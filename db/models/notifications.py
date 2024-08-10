@@ -1,7 +1,7 @@
 from ..base import Base
 from .mixins import Timestamp
-from sqlalchemy import Column, UUID, String, Enum
-from .enums import NotificationStatus
+from sqlalchemy import Column, UUID, String
+from .enums import NotificationStatus, UserType
 from uuid import uuid4
 
 
@@ -11,8 +11,8 @@ class Notification(Base, Timestamp):
     id = Column(UUID, default=uuid4, primary_key=True)
     message = Column(String)
     user_id = Column(UUID)
-    user_type = 
-    status = Column(Enum(NotificationStatus, name="notification_status"), default=NotificationStatus.UNREAD)
+    user_type = Column(String, nullable=True)
+    status = Column(String, nullable=False, default=NotificationStatus.UNREAD.value)
 
     def __repr__(self):
-        return self.message
+        return f"{self.__class__.__name__}: {self.message}"

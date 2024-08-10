@@ -1,6 +1,6 @@
 from ..base import Base
 from .mixins import Timestamp
-from sqlalchemy import Column, UUID, String, Text, DECIMAL, Enum, Integer, ForeignKey
+from sqlalchemy import Column, UUID, String, Text, DECIMAL, Integer, ForeignKey
 from uuid import uuid4
 from .enums import MenuCategory
 from sqlalchemy.orm import relationship
@@ -13,7 +13,7 @@ class Menu(Base, Timestamp):
     name = Column(String, index=True)
     description = Column(Text())
     price = Column(DECIMAL)
-    category = Column(Enum(MenuCategory, name="menu_category"), default=MenuCategory.OTHER)
+    category = Column(String, nullable=False, default=MenuCategory.OTHER.value)
     image = Column(String, nullable=True)
     thumbnail = Column(String, nullable=True)
 

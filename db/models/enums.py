@@ -6,24 +6,24 @@ for menu items.
 """
 
 
-class UserType(str, Enum):
+class UserType(Enum):
     ADMIN = "admin"
     CUSTOMER = "customer"
 
 
-class MenuCategory(str, Enum):
+class MenuCategory(Enum):
     MAIN_COURSES = "main_courses"
     DRINKS = "drinks"
     OTHER = "other"
     # I shall add the enum types later
 
 
-class OrderStatus(str, Enum):
+class OrderStatus(Enum):
     PENDING = "pending"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 
 
-class NotificationStatus(str, Enum):
+class NotificationStatus(Enum):
     READ = "read"
     UNREAD = "unread"
