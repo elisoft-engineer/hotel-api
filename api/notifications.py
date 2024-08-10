@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from db.session import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.crud.notifications import create_notification, get_user_notifications, get_user_unread_notifications, \
+from db.crud.notifications import create_notification, get_notifications, \
     mark_all_notifications_as_read, mark_notification_as_read, get_notification, delete_notification
 from db.schemas.notifications import Notification, NotificationCreate
 from typing import List
