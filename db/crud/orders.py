@@ -4,41 +4,85 @@ from uuid import UUID
 from db.models import orders as models
 from db.schemas import orders as schemas
 from db.models.enums import OrderStatus
+from menu import get_menu_item
+
+"""
+This file handles all the crud utils for the orders api
+"""
 
 
-async def get_orders(db: AsyncSession, offset: int | None = None, limit: int | None = None):
-    results = await db.execute(select(models.Order).offset(offset).limit(limit))
-    return results.scalars().all()
+# ### The get_orders util handles all types of order list queries. This is achieved through the query params. ###
+# ### This helps avoid boilerplate code and easier handling of api endpoints ###
 
-
-async def get_customer_orders(
-    db: AsyncSession,
-    customer_id: UUID,
-    offset: int | None = None,
-    limit: int | None = None
+async def get_orders(
+        db: AsyncSession,
+        customer_id: UUID,
+        order_status: str | None = None,
+        offset: int | None = None,
+        limit: int | None = None
 ):
-    results = await db.execute(
-        select(models.Order).where(models.Order.customer_id == customer_id).offset(offset).limit(limit)
-    )
+    # this block is executed when a customer id is parsed
+    if customer_id:
+        # if the order status is parsed, filter the order list using the status provided
+        if order_status and order_status in [status.value for status in OrderStatus]:
+            results = await db.execute(
+                select(models.Order).where(
+                    models.Order.customer_id == customer_id and models.Order.status == order_status).offset(
+                    offset).limit(limit)
+            )
+        else:
+            # where the order status is not provided, return all the customer orders
+            results = await db.execute(
+                select(models.Order).where(models.Order.customer_id == customer_id).offset(offset).limit(limit)
+            )
+    else:
+        # where there is no specified customer and the order status is parsed
+        if order_status and order_status in [status.value for status in OrderStatus]:
+            results = await db.execute(
+                select(models.Order).where(models.Order.status == order_status).offset(offset).limit(limit)
+            )
+        else:
+            # no customer and no order status parsed ... return all the orders with pagination using offset and limit
+            results = await db.execute(select(models.Order).offset(offset).limit(limit))
     return results.scalars().all()
 
 
+# crud for getting a single order
 async def get_order(db: AsyncSession, order_id: UUID):
     result = await db.execute(select(models.Order).where(models.Order.id == order_id))
     return result.scalars().first()
 
 
+# crud for creating an order
 async def create_order(db: AsyncSession, order: schemas.OrderCreate):
-    order_data = order.model_dump()
-    # I need to check out how to create all the relationship of order <-> menu items
+    # first create the order and add the details later
+    db_order = models.Order(customer_id=order.customer_id)
+    db.add(db_order)
+    await db.commit()
+    await db.refresh(db_order)
+
+    # calculate the total amount
+    total_amount = 0
+    for item_id in order.item_ids:
+        menu_item = await get_menu_item(db, item_id)
+        # append the menu if and only if the menu item exists
+        if menu_item:
+            db_order.items.append(menu_item)
+            total_amount += menu_item.price
+    # update the amount
+    db_order.amount = total_amount
+    db.add(db_order)
+    await db.commit()
+    await db.refresh(db_order)
+    return db_order
 
 
 # The update crud only updates the order status
-async def update_order(db: AsyncSession, order_id: UUID, order_status: OrderStatus):
+async def update_order(db: AsyncSession, order_id: UUID, order_status: str | None = None):
     order = await get_order(db, order_id)
-    if not order:
+    if not order or order_status not in [status.value for status in OrderStatus]:
         return None
-    
+
     setattr(order, "status", order_status)
     db.add(order)
     await db.commit()
@@ -50,7 +94,7 @@ async def delete_order(db: AsyncSession, order_id: UUID):
     order = await get_order(db, order_id)
     if not order:
         return None
-    
+
     await db.delete(order)
     await db.commit()
     return {"detail": "Order deleted successfully"}
