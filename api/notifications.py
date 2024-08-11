@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from db.session import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.crud.notifications import create_notification, get_notifications, \
-    mark_all_notifications_as_read, mark_notification_as_read, get_notification, delete_notification
+    patch_notifications, patch_notification, get_notification, delete_notification
 from db.schemas.notifications import Notification, NotificationCreate
 from typing import List
 from uuid import UUID
@@ -27,17 +27,12 @@ async def create_new_notification(notification: NotificationCreate, db: AsyncSes
 @router.get("/", response_model=List[Notification], status_code=status.HTTP_200_OK)
 async def read_user_notifications(
         user_id: UUID | None = None,
+        notification_status: str | None = None,
         db: AsyncSession = Depends(get_db),
         offset: int | None = None,
-        limit: int | None = None,
-        unread: bool = False,
+        limit: int | None = None
 ):
-    if not user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User id is required")
-    if unread:
-        notifications = await get_user_unread_notifications(db, user_id, offset, limit)
-    else:
-        notifications = await get_user_notifications(db, user_id, offset, limit)
+    notifications = await get_notifications(db, user_id, notification_status, offset, limit)
     return notifications
 
 
