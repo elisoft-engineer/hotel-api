@@ -27,6 +27,18 @@ async def get_notifications(
     return results.scalars().all()
 
 
+async def patch_notifications(db: AsyncSession, user_id: UUID):
+    unread_notifications = get_notifications(db, user_id, notification_status=NotificationStatus.UNREAD.value)
+
+    for notification in unread_notifications:  # confirm about the unread_notifications sequence
+        setattr(notification, "status", NotificationStatus.READ.value)
+        db.add(notification)
+        await db.commit()
+        await db.refresh(notification)
+
+    return {"detail": "Notifications read successfully"}
+
+
 async def get_notification(db: AsyncSession, notification_id: UUID):
     result = await db.execute(select(models.Notification).where(models.Notification.id == notification_id))
     return result.scalars().first()
@@ -41,7 +53,7 @@ async def create_notification(db: AsyncSession, notification: schemas.Notificati
     return db_notification
 
 
-async def mark_notification_as_read(db: AsyncSession, notification_id: UUID):
+async def patch_notification(db: AsyncSession, notification_id: UUID):
     notification = await get_notification(db, notification_id)
     if not notification:
         return None
@@ -51,18 +63,6 @@ async def mark_notification_as_read(db: AsyncSession, notification_id: UUID):
     await db.commit()
     await db.refresh(notification)
     return {"detail": "Notification read successfully"}
-
-
-async def mark_all_notifications_as_read(db: AsyncSession, user_id: UUID):
-    unread_notifications = get_notifications(db, user_id, notification_status=NotificationStatus.UNREAD.value)
-
-    for notification in unread_notifications:  # confirm about the unread_notifications sequence
-        setattr(notification, "status", NotificationStatus.READ.value)
-        db.add(notification)
-        await db.commit()
-        await db.refresh(notification)
-
-    return {"detail": "Notifications read successfully"}
 
 
 async def delete_notification(db: AsyncSession, notification_id: UUID):
