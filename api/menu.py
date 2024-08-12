@@ -15,7 +15,7 @@ The following are the api endpoints associated with the menu.
 
 
 @router.get("/", response_model=List[Menu], status_code=status.HTTP_200_OK)
-async def read_menu(db: AsyncSession, offset: int | None = None, limit: int | None = None):
+async def read_menu(db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None):
     menu = await get_menu(db, offset, limit)
     return menu
 
