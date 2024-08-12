@@ -25,6 +25,7 @@ class User:
 
 
 class Admin(Base, User, Timestamp):
+    __tablename__ = "admins"
     employee_id = Column(String, index=True)
     user_type = Column(String, nullable=False, default=UserType.ADMIN.value)
     # the employee id can be used as an alternative for authentication
