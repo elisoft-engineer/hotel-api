@@ -41,22 +41,20 @@ async def read_user_notifications(
 async def mark_user_notifications_as_read(user_id: UUID | None = None, db: AsyncSession = Depends(get_db)):
     if not user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Permission denied")
-    return await mark_all_notifications_as_read(db, user_id)
+    return await patch_notifications(db, user_id)
 
 
 # Marking one notification as read
 @router.patch("/{notification_id}", status_code=status.HTTP_200_OK)
 async def mark_user_notification_as_read(
-        notification_id: UUID,
-        user_id: UUID | None = None,
-        db: AsyncSession = Depends(get_db)
+        notification_id: UUID, user_id: UUID | None = None, db: AsyncSession = Depends(get_db)
 ):
     notification = await get_notification(db, notification_id)
     if not notification:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
     if not user_id or notification.user_id != user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Permission denied")
-    return await mark_notification_as_read(db, notification_id)
+    return await patch_notification(db, notification_id)
 
 
 @router.delete("/{notification_id}", status_code=status.HTTP_204_NO_CONTENT)
