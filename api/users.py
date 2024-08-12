@@ -7,7 +7,7 @@ from uuid import UUID
 from db.crud.users import get_customers, get_customer, update_customer, delete_customer, get_admins, get_admin, \
     update_admin, delete_admin
 
-router = APIRouter()
+router = APIRouter(tags=["users"])
 
 
 # Customer routes
