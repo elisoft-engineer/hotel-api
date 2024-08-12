@@ -1,5 +1,4 @@
 from sqlalchemy.orm import declarative_mixin
-from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime
 from sqlalchemy.sql import func
 
