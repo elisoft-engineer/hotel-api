@@ -27,6 +27,7 @@ class AdminUpdate(AdminBase):
 class Admin(AdminBase):
     id: UUID
     is_active: bool
+    user_type: str
     notifications: List[Notification] = []
 
     class Config:
@@ -55,6 +56,7 @@ class Customer(CustomerBase):
     first_name: str
     last_name: str
     is_active: bool
+    user_type: str
     notifications: List[Notification] = []
 
     from_attributes = True
