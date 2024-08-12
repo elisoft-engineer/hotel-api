@@ -1,7 +1,7 @@
 from ..base import Base
 from .mixins import Timestamp
 from sqlalchemy import Column, UUID, String
-from .enums import NotificationStatus, UserType
+from .enums import NotificationStatus
 from uuid import uuid4
 
 
