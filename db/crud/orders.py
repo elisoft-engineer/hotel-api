@@ -4,7 +4,7 @@ from uuid import UUID
 from db.models import orders as models
 from db.schemas import orders as schemas
 from db.models.enums import OrderStatus
-from menu import get_menu_item
+from .menu import get_menu_item
 
 """
 This file handles all the crud utils for the orders api
