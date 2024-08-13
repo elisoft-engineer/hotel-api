@@ -10,6 +10,9 @@ from os import path, getenv
 from dotenv import load_dotenv
 
 
+load_dotenv(path.join(settings.BASE_DIR, ".env"))
+
+
 async def create_all_tables_async():
     async with AsyncSessionLocal() as async_session:
         async_session.run_sync(menu_models.Base.metadata.create_all(bind=engine))
@@ -17,9 +20,6 @@ async def create_all_tables_async():
         async_session.run_sync(notification_models.Base.metadata.create_all(bind=engine))
         async_session.run_sync(order_models.Base.metadata.create_all(bind=engine))
         async_session.run_sync(user_models.Base.metadata.create_all(bind=engine))
-
-
-load_dotenv(dotenv_path=str(path.join(settings.BASE_DIR, ".env")))
 
 
 app = FastAPI(debug=bool(getenv("DEBUG")))
