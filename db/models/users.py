@@ -17,8 +17,8 @@ class User:
     __abstract__ = True
 
     id = Column(UUID, primary_key=True, default=uuid4)
-    email = Column(String, unique=True, index=True)
-    password = Column(String)
+    email = Column(String, unique=True, index=True, nullable=False)
+    password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
 
     # Add the notification relationship
@@ -32,7 +32,7 @@ class Admin(Base, User, Timestamp):
 
 
 class Customer(Base, User, Timestamp):
-    __tablename__ = "users"
+    __tablename__ = "customers"
 
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)

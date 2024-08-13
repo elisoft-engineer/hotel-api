@@ -11,9 +11,10 @@ class Order(Base, Timestamp):
     __tablename__ = "orders"
 
     id = Column(UUID, default=uuid4, primary_key=True)
-    amount = Column(DECIMAL)
-    customer_id = Column(ForeignKey("customers.id"))
+    amount = Column(DECIMAL, nullable=False)
     status = Column(String, nullable=False, default=OrderStatus.PENDING.value)
+
+    customer_id = Column(ForeignKey("customers.id"), nullable=False)
 
     customer = relationship("Customer", back_populates="orders")
     items = relationship("Menu", secondary=order_menu_association, back_populates="orders")

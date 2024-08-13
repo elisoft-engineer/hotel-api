@@ -9,8 +9,8 @@ class Notification(Base, Timestamp):
     __tablename__ = "notifications"
 
     id = Column(UUID, default=uuid4, primary_key=True)
-    message = Column(String)
-    user_id = Column(UUID)
+    message = Column(String, nullable=False)
+    user_id = Column(UUID, nullable=False)
     user_type = Column(String, nullable=True)
     status = Column(String, nullable=False, default=NotificationStatus.UNREAD.value)
 

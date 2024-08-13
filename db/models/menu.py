@@ -10,9 +10,9 @@ class Menu(Base, Timestamp):
     __tablename__ = "menu"
 
     id = Column(UUID, default=uuid4, primary_key=True)
-    name = Column(String, index=True)
-    description = Column(Text())
-    price = Column(DECIMAL)
+    name = Column(String, index=True, nullable=False)
+    description = Column(Text, nullable=False)
+    price = Column(DECIMAL, nullable=False)
     category = Column(String, nullable=False, default=MenuCategory.OTHER.value)
     image = Column(String, nullable=True)
     thumbnail = Column(String, nullable=True)
@@ -27,11 +27,11 @@ class Review(Base, Timestamp):
     __tablename__ = "reviews"
 
     id = Column(UUID, default=uuid4, primary_key=True)
-    message = Column(Text())
-    rating = Column(Integer)  # validate for a range of 1 to 5 in the front-end
+    message = Column(Text, nullable=False)
+    rating = Column(Integer, nullable=False)
 
-    menu_id = Column(ForeignKey("menu.id"))
-    customer_id = Column(ForeignKey("customer.id"))
+    menu_id = Column(ForeignKey("menu.id"), nullable=False)
+    customer_id = Column(ForeignKey("customers.id"), nullable=False)
 
     menu = relationship("Menu", back_populates="reviews")
     customer = relationship("Customer", back_populates="reviews")
