@@ -18,9 +18,12 @@ class Settings:
     BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
     FILES_DIR = path.join(BASE_DIR, "files")
     MENU_DIR = path.join(FILES_DIR, "menu")
+    MENU_IMAGES_DIR = path.join(MENU_DIR, "images")
+    MENU_THUMBNAILS_DIR = path.join(MENU_DIR, "thumbnails")
 
     makedirs(FILES_DIR, exist_ok=True)
     makedirs(MENU_DIR, exist_ok=True)
-
+    makedirs(MENU_IMAGES_DIR, exist_ok=True)
+    makedirs(MENU_THUMBNAILS_DIR, exist_ok=True)
 
 settings = Settings()
