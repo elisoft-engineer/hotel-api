@@ -22,4 +22,4 @@ class Notification(NotificationBase):
     status: str
 
     class Config:
-        from_attributes = True
+        from_attributes: bool = True

@@ -24,7 +24,7 @@ class Menu(MenuBase):
     thumbnail: str
 
     class Config:
-        from_attributes = True
+        from_attributes: bool = True
 
 
 class ReviewBase(BaseModel):
@@ -47,4 +47,4 @@ class Review(ReviewBase):
     customer_id: UUID
 
     class Config:
-        from_attributes = True
+        from_attributes: bool = True

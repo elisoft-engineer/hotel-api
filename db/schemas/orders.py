@@ -27,4 +27,4 @@ class Order(OrderBase):
     amount: Decimal
 
     class Config:
-        from_attributes = True
+        from_attributes: bool = True
