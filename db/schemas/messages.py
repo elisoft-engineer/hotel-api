@@ -16,4 +16,4 @@ class Message(MessageBase):
     id: UUID
 
     class Config:
-        from_attributes = True
+        from_attributes: bool = True

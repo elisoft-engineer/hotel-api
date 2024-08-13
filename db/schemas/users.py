@@ -31,7 +31,7 @@ class Admin(AdminBase):
     notifications: List[Notification] = []
 
     class Config:
-        from_attributes = True
+        from_attributes: bool = True
 
 
 class CustomerBase(AbstractUser):
@@ -59,4 +59,4 @@ class Customer(CustomerBase):
     user_type: str
     notifications: List[Notification] = []
 
-    from_attributes = True
+    from_attributes: bool = True
