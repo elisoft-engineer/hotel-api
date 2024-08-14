@@ -12,6 +12,7 @@ class MenuBase(BaseModel):
 
 class MenuCreate(MenuBase):
     image: str
+    thumbnail: str
 
 
 class MenuUpdate(MenuBase):
