@@ -1,11 +1,15 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, Form, UploadFile, File
 from db.session import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.crud.menu import get_menu, get_menu_item, update_menu, delete_menu, get_reviews, get_review, \
     create_review, update_review, delete_review
 from db.schemas.menu import Menu, MenuUpdate, Review, ReviewCreate, ReviewUpdate
 from typing import List
-from uuid import UUID
+from decimal import Decimal
+from uuid import UUID, uuid4
+from PIL import Image
+from os import path
+from core.config import settings
 
 router = APIRouter(prefix="/menu", tags=["menu"])
 
@@ -19,23 +23,31 @@ async def read_menu(db: AsyncSession = Depends(get_db), offset: int | None = Non
     menu = await get_menu(db, offset, limit)
     return menu
 
-"""
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_new_menu_item(
         name: str = Form(...),
         description: str = Form(...),
         price: Decimal = Form(...),
-        category: MenuCategory = Form(...),
+        category: str = Form(...),
         image: UploadFile = File(...),
         db: AsyncSession = Depends(get_db)
 ):
-    #  Handle the thumbnail generation
+    # Rename the image to avoid conflicts during writing in the file system
+    image_filename = f"{uuid4().hex}_{image.filename}"
+    image_path = path.join(settings.MENU_IMAGES_DIR, image_filename)
+
+    # Save the image
+    with open(image_path, "wb") as image_buffer:
+        image_buffer.write(image.file.read())
+
+    # Generate thumbnail and save it
+    with Image.open(image_path) as img:
+        img.thumbnail(())
 
     db_menu = await create_menu(db, menu)
     if not db_menu:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating account")
     return {"detail": "Menu item created successfully"}
-"""
 
 
 @router.get("/{menu_id}", response_model=Menu, status_code=status.HTTP_200_OK)
