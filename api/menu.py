@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Form, UploadFile, File
 from db.session import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.crud.menu import get_menu, get_menu_item, update_menu, delete_menu, get_reviews, get_review, \
+from db.crud.menu import get_menu, create_menu, get_menu_item, update_menu, delete_menu, get_reviews, get_review, \
     create_review, update_review, delete_review
-from db.schemas.menu import Menu, MenuUpdate, Review, ReviewCreate, ReviewUpdate
+from db.schemas.menu import Menu, MenuCreate, MenuUpdate, Review, ReviewCreate, ReviewUpdate
 from typing import List
 from decimal import Decimal
 from uuid import UUID, uuid4
@@ -42,11 +42,26 @@ async def create_new_menu_item(
 
     # Generate thumbnail and save it
     with Image.open(image_path) as img:
-        img.thumbnail(())
+        thumbnail_filename = f"thumb_{uuid4().hex}_{image_filename}"
+        thumbnail_path = path.join(settings.MENU_THUMBNAILS_DIR, thumbnail_filename)
+        aspect_ratio = img.size[0] / img.size[1]
+        output_width = 300
+        img.thumbnail((output_width, output_width * aspect_ratio))
+        img.save(thumbnail_path)
+
+    # Create the menu_create obj and parse it to create_menu
+    menu = MenuCreate(
+        name=name,
+        description=description,
+        price=price,
+        category=category,
+        image=image_path,
+        thumbnail=thumbnail_path
+    )
 
     db_menu = await create_menu(db, menu)
     if not db_menu:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating account")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating menu item")
     return {"detail": "Menu item created successfully"}
 
 
