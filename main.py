@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi_standalone_docs import StandaloneDocs
 from db.base import engine
 from db.session import AsyncSessionLocal
 from db.models import menu as menu_models, messages as message_models, notifications as notification_models, \
@@ -22,7 +23,8 @@ async def create_all_tables_async():
         async_session.run_sync(user_models.Base.metadata.create_all(bind=engine))
 
 
-app = FastAPI(debug=bool(getenv("DEBUG")))
+app = FastAPI(docs_url="/swagger", redoc_url=None)
+StandaloneDocs(app=app)
 
 
 app.include_router(menu_api.router)

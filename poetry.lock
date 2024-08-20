@@ -20,17 +20,6 @@ typing-extensions = ">=4"
 tz = ["backports.zoneinfo"]
 
 [[package]]
-name = "alembic-autogenerate-enums"
-version = "0.1.2"
-description = "Alembic hook that allows enums values to be upgraded and downgraded in migrations automatically"
-optional = false
-python-versions = ">=3.7,<4.0"
-files = [
-    {file = "alembic-autogenerate-enums-0.1.2.tar.gz", hash = "sha256:467adc76f1ef32576e514ef55c400c28900547800b676dec349293519751c128"},
-    {file = "alembic_autogenerate_enums-0.1.2-py3-none-any.whl", hash = "sha256:07b8fa63b2fca107effc61d3dc86d7ff848dd73b0e6cc9c292e904edcaeb8278"},
-]
-
-[[package]]
 name = "annotated-types"
 version = "0.7.0"
 description = "Reusable constraint types to use with typing.Annotated"
@@ -236,6 +225,20 @@ typing-extensions = ">=4.8.0"
 [package.extras]
 all = ["email_validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.5)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.7)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
 standard = ["email_validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.5)", "httpx (>=0.23.0)", "jinja2 (>=2.11.2)", "python-multipart (>=0.0.7)", "uvicorn[standard] (>=0.12.0)"]
+
+[[package]]
+name = "fastapi-standalone-docs"
+version = "0.1.6"
+description = "Host FastAPI Swagger UI and ReDoc without third party CDNs"
+optional = false
+python-versions = ">=3.8.1,<4.0"
+files = [
+    {file = "fastapi_standalone_docs-0.1.6-py3-none-any.whl", hash = "sha256:de6a183476466abacf069209f171592dcf70d0305396dc8b6532a7acdaf8924a"},
+    {file = "fastapi_standalone_docs-0.1.6.tar.gz", hash = "sha256:fc71751bd3d6fc17ac91c4c9aea4f45d79b87a59be0b6bb4cdc6bc9c7c599422"},
+]
+
+[package.dependencies]
+fastapi = ">=0.95.2,<1"
 
 [[package]]
 name = "greenlet"
@@ -947,4 +950,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "607d5ff31e7bb0e5571b4d1448d1eed2cb79a8a5a6f05c4b9e35260db3489e18"
+content-hash = "9ced2a77aceabc77b01029d6c7177b762ce70c479a66743de19550cbd9326eb9"
