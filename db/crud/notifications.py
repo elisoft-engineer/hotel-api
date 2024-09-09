@@ -28,7 +28,7 @@ async def get_notifications(
 
 
 async def patch_notifications(db: AsyncSession, user_id: UUID):
-    unread_notifications = get_notifications(db, user_id, notification_status=NotificationStatus.UNREAD.value)
+    unread_notifications = await get_notifications(db, user_id, notification_status=NotificationStatus.UNREAD.value)
 
     for notification in unread_notifications:  # confirm about the unread_notifications sequence
         setattr(notification, "status", NotificationStatus.READ.value)
