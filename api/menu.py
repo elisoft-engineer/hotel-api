@@ -75,7 +75,7 @@ async def read_menu_item(menu_id: UUID, db: AsyncSession = Depends(get_db)):
 
 @router.put("/{menu_id}", response_model=Menu, status_code=status.HTTP_200_OK)
 async def update_menu_item_info(menu_id: UUID, menu_update: MenuUpdate, db: AsyncSession = Depends(get_db)):
-    updated_menu_item = update_menu(db, menu_id, menu_update)
+    updated_menu_item = await update_menu(db, menu_id, menu_update)
     if not updated_menu_item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Menu item not found")
     return updated_menu_item
@@ -98,7 +98,7 @@ The following are the api endpoints associated with the menu reviews.
 async def read_menu_item_reviews(
         menu_id: UUID, db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None
 ):
-    reviews = get_reviews(db, menu_id, offset, limit)
+    reviews = await get_reviews(db, menu_id, offset, limit)
     return reviews
 
 
