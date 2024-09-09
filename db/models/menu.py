@@ -4,6 +4,7 @@ from sqlalchemy import Column, UUID, String, Text, DECIMAL, Integer, ForeignKey
 from uuid import uuid4
 from .enums import MenuCategory
 from sqlalchemy.orm import relationship
+from .assotiations import order_menu_association
 
 
 class Menu(Base, Timestamp):
@@ -18,6 +19,7 @@ class Menu(Base, Timestamp):
     thumbnail = Column(String, nullable=True)
 
     reviews = relationship("Review", back_populates="item")
+    orders = relationship("Order", secondary=order_menu_association, back_populates="items")
 
     def __repr__(self):
         return f"{self.__class__.name}: {self.name}"
@@ -33,7 +35,7 @@ class Review(Base, Timestamp):
     menu_id = Column(ForeignKey("menu.id"), nullable=False)
     customer_id = Column(ForeignKey("customers.id"), nullable=False)
 
-    menu = relationship("Menu", back_populates="reviews")
+    item = relationship("Menu", back_populates="reviews")
     customer = relationship("Customer", back_populates="reviews")
 
     def __repr__(self):
