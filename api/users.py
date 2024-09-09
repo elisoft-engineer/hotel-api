@@ -52,7 +52,7 @@ async def read_admins(db: AsyncSession = Depends(get_db), offset: int | None = N
 
 @router.get("/admins/{admin_id}", response_model=Admin, status_code=status.HTTP_200_OK)
 async def read_admin(admin_id: UUID, db: AsyncSession = Depends(get_db)):
-    admin = get_admin(db, admin_id)
+    admin = await get_admin(db, admin_id)
     if not admin:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Admin not found")
     return admin
