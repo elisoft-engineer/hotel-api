@@ -21,14 +21,11 @@ class User:
     password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
 
-    # Add the notification relationship
-
 
 class Admin(Base, User, Timestamp):
     __tablename__ = "admins"
     employee_id = Column(String, index=True)
     user_type = Column(String, nullable=False, default=UserType.ADMIN.value)
-    # the employee id can be used as an alternative for authentication
 
 
 class Customer(Base, User, Timestamp):
@@ -39,6 +36,7 @@ class Customer(Base, User, Timestamp):
     user_type = Column(String, nullable=False, default=UserType.CUSTOMER.value)
 
     reviews = relationship("Review", back_populates="customer")
+    orders = relationship("Order", back_populates="customer")
 
     def __repr__(self):
         return f"{self.__class__.__name__}: {self.email}"
