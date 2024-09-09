@@ -37,7 +37,7 @@ async def read_user_notifications(
 
 
 # Marking all user notifications as read
-@router.patch("/", response_model=List[Notification], status_code=status.HTTP_200_OK)
+@router.patch("/", status_code=status.HTTP_200_OK)
 async def mark_user_notifications_as_read(user_id: UUID | None = None, db: AsyncSession = Depends(get_db)):
     if not user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Permission denied")
