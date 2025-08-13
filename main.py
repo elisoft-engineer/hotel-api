@@ -10,18 +10,7 @@ from core.config import settings
 from os import path
 from dotenv import load_dotenv
 
-
 load_dotenv(path.join(settings.BASE_DIR, ".env"))
-
-
-async def create_all_tables_async():
-    async with AsyncSessionLocal() as async_session:
-        async_session.run_sync(menu_models.Base.metadata.create_all(bind=engine))
-        async_session.run_sync(message_models.Base.metadata.create_all(bind=engine))
-        async_session.run_sync(notification_models.Base.metadata.create_all(bind=engine))
-        async_session.run_sync(order_models.Base.metadata.create_all(bind=engine))
-        async_session.run_sync(user_models.Base.metadata.create_all(bind=engine))
-
 
 app = FastAPI(docs_url="/swagger", redoc_url=None)
 StandaloneDocs(app=app)
