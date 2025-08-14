@@ -89,4 +89,4 @@ async def admin_signin(admin: AdminSignin, db: AsyncSession = Depends(get_db)):
         )
 
     access_token = create_access_token(data={"user": db_admin})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "Bearer"}
