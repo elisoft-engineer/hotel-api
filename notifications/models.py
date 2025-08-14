@@ -5,8 +5,13 @@ from sqlalchemy.dialects import postgresql
 
 from db.base import Base
 
-from .enums import NotificationStatus
-from .mixins import Timestamp
+from ..db.models.enums import NotificationStatus
+from ..db.models.mixins import Timestamp
+
+
+class NotificationStatus(Enum):
+    READ = "read"
+    UNREAD = "unread"
 
 
 class Notification(Base, Timestamp):

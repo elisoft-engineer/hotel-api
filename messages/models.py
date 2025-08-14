@@ -3,7 +3,7 @@ from uuid import uuid4
 from sqlalchemy import UUID, Column, String, Text
 
 from ..base import Base
-from .mixins import Timestamp
+from ..db.models.mixins import Timestamp
 
 
 class Message(Base, Timestamp):

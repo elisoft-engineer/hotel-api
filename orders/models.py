@@ -6,9 +6,15 @@ from sqlalchemy.orm import relationship
 
 from db.base import Base
 
-from .assotiations import order_menu_association
-from .enums import OrderStatus
-from .mixins import Timestamp
+from ..db.models.assotiations import order_menu_association
+from ..db.models.enums import OrderStatus
+from ..db.models.mixins import Timestamp
+
+
+class OrderStatus(Enum):
+    PENDING = "pending"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
 
 
 class Order(Base, Timestamp):
@@ -27,3 +33,14 @@ class Order(Base, Timestamp):
 
     customer = relationship("Customer", back_populates="orders")
     items = relationship("Menu", secondary=order_menu_association, back_populates="orders")
+
+from sqlalchemy import UUID, Column, ForeignKey, Table
+
+from ..base import Base
+
+order_menu_association = Table(
+    "order_menu",
+    Base.metadata,
+    Column("order_id", UUID, ForeignKey("orders.id", ondelete="CASCADE"), primary_key=True),
+    Column("menu_id", UUID, ForeignKey("menu.id", ondelete="CASCADE"), primary_key=True)
+)

@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from .menu import Menu
+from ..menu.schemas import Menu
 
 
 class OrderBase(BaseModel):

@@ -3,11 +3,11 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from db.models import orders as models
+from orders import models as models
 from db.models.enums import OrderStatus
-from db.schemas import orders as schemas
+from orders import schemas as schemas
 
-from .menu import get_menu_item
+from ..menu.crud import get_menu_item
 
 """
 This file handles all the crud utils for the orders api

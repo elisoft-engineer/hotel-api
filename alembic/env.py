@@ -8,6 +8,10 @@ from dotenv import load_dotenv
 
 from alembic import context
 
+from menu import models
+from messages import models
+from orders import models
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 load_dotenv(os.path.join(BASE_DIR, ".env.dev"))
@@ -18,8 +22,9 @@ config = context.config
 
 config.set_main_option("sqlalchemy.url", os.getenv('DATABASE_URL', ''))
 
+from auth import models
 from db.base import Base, engine
-from db.models import menu, messages, notifications, orders, users
+from notifications import models
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

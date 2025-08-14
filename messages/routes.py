@@ -4,8 +4,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.crud.messages import create_message, delete_message, get_message, get_messages
-from db.schemas.messages import Message, MessageCreate
+from messages.crud import create_message, delete_message, get_message, get_messages
+from messages.schemas import Message, MessageCreate
 from db.session import get_db
 
 router = APIRouter(prefix="/messages", tags=["messages"])

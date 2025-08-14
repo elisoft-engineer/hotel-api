@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.crud.notifications import (
+from notifications.crud import (
     create_notification,
     delete_notification,
     get_notification,
@@ -12,7 +12,7 @@ from db.crud.notifications import (
     patch_notification,
     patch_notifications,
 )
-from db.schemas.notifications import Notification, NotificationCreate
+from notifications.schemas import Notification, NotificationCreate
 from db.session import get_db
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])

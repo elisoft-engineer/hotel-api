@@ -3,8 +3,8 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from db.models import messages as models
-from db.schemas import messages as schemas
+from messages import models as models
+from messages import schemas as schemas
 
 
 async def get_messages(db: AsyncSession, offset: int | None = None, limit: int | None = None):

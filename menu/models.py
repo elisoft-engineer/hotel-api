@@ -6,9 +6,16 @@ from sqlalchemy.orm import relationship
 
 from db.base import Base
 
-from .assotiations import order_menu_association
-from .enums import MenuCategory
-from .mixins import Timestamp
+from ..db.models.assotiations import order_menu_association
+from ..db.models.enums import MenuCategory
+from ..db.models.mixins import Timestamp
+
+
+class MenuCategory(Enum):
+    MAIN_COURSES = "main_courses"
+    DRINKS = "drinks"
+    OTHER = "other"
+    # TODO: Add the enum types later
 
 
 class Menu(Base, Timestamp):

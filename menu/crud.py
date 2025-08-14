@@ -3,8 +3,8 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from db.models import menu as models
-from db.schemas import menu as schemas
+from menu import models as models
+from menu import schemas as schemas
 
 """
 This file takes care of the menu db crud utilities that are used in the api endpoints

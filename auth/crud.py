@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from core.security import get_password_hash
-from db.models import users as models
+from auth import models as models
 from db.schemas import users as schemas
 
 """

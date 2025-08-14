@@ -4,14 +4,14 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.crud.orders import (
+from orders.crud import (
     create_order,
     delete_order,
     get_order,
     get_orders,
     update_order,
 )
-from db.schemas.orders import Order, OrderCreate
+from orders.schemas import Order, OrderCreate
 from db.session import get_db
 
 """

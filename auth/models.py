@@ -6,13 +6,17 @@ from sqlalchemy.orm import declarative_mixin, relationship
 
 from db.base import Base
 
-from .enums import UserType
-from .mixins import Timestamp
+from ..db.models.enums import UserType
+from ..db.models.mixins import Timestamp
 
 """
 A base user class is more robust and precise as we just have to subclass it to
 manage both the admins and customers.
 """
+
+class UserType(Enum):
+    ADMIN = "admin"
+    CUSTOMER = "customer"
 
 
 @declarative_mixin

@@ -5,10 +5,10 @@ from fastapi import FastAPI
 from fastapi_standalone_docs import StandaloneDocs
 
 from api import auth as auth_api
-from api import menu as menu_api
-from api import messages as message_api
-from api import notifications as notification_api
-from api import orders as order_api
+from menu import routes as menu_api
+from messages import routes as message_api
+from notifications import routes as notification_api
+from orders import routes as order_api
 from api import users as user_api
 from core.config import settings
 

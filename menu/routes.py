@@ -10,7 +10,7 @@ from PIL import Image
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
-from db.crud.menu import (
+from menu.crud import (
     create_menu,
     create_review,
     delete_menu,
@@ -22,7 +22,7 @@ from db.crud.menu import (
     update_menu,
     update_review,
 )
-from db.schemas.menu import (
+from menu.schemas import (
     Menu,
     MenuCreate,
     MenuUpdate,
