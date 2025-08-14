@@ -1,5 +1,5 @@
-from sqlalchemy.orm import declarative_mixin
 from sqlalchemy import Column, DateTime
+from sqlalchemy.orm import declarative_mixin
 from sqlalchemy.sql import func
 
 """

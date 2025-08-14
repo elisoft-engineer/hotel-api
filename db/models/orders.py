@@ -1,10 +1,12 @@
-from ..base import Base
-from .mixins import Timestamp
-from sqlalchemy import Column, UUID, DECIMAL, String, ForeignKey
 from uuid import uuid4
-from .enums import OrderStatus
+
+from sqlalchemy import DECIMAL, UUID, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
+
+from ..base import Base
 from .assotiations import order_menu_association
+from .enums import OrderStatus
+from .mixins import Timestamp
 
 
 class Order(Base, Timestamp):

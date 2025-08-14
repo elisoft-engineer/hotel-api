@@ -1,15 +1,16 @@
+from uuid import UUID
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
 from db.models import menu as models
 from db.schemas import menu as schemas
-from uuid import UUID
 
 """
 This file takes care of the menu db crud utilities that are used in the api endpoints
 Exception handling is taken care of in the API endpoints since we cannot raise an
 HTTPException from the crud utilities
 """
-
 
 # These are the CRUD utilities for menu items
 

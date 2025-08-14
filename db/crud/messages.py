@@ -1,6 +1,8 @@
+from uuid import UUID
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from uuid import UUID
+
 from db.models import messages as models
 from db.schemas import messages as schemas
 

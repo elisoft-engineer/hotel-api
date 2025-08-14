@@ -1,16 +1,24 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from db.session import get_db
-from sqlalchemy.ext.asyncio import AsyncSession
-from db.schemas.orders import Order, OrderCreate
-from db.crud.orders import get_orders, get_order, create_order, update_order, delete_order
-from uuid import UUID
 from typing import List
+from uuid import UUID
 
-router = APIRouter(prefix="/orders", tags=["orders"])
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from db.crud.orders import (
+    create_order,
+    delete_order,
+    get_order,
+    get_orders,
+    update_order,
+)
+from db.schemas.orders import Order, OrderCreate
+from db.session import get_db
 
 """
 The following are the api endpoints for orders
 """
+
+router = APIRouter(prefix="/orders", tags=["orders"])
 
 
 @router.get("/", response_model=List[Order], status_code=status.HTTP_200_OK)

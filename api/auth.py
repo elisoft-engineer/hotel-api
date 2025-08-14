@@ -1,19 +1,29 @@
-from fastapi import APIRouter, Depends, status, HTTPException
-from db.session import get_db
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.schemas.auth import Token
-from db.schemas.users import CustomerCreate, CustomerSignin, AdminCreate, AdminSignin, Admin, Customer
-from db.crud.users import create_customer, get_customer_by_email, create_admin, get_admin_by_email
+
 from core.security import create_access_token, verify_password
+from db.crud.users import (
+    create_admin,
+    create_customer,
+    get_admin_by_email,
+    get_customer_by_email,
+)
+from db.schemas.auth import Token
+from db.schemas.users import (
+    Admin,
+    AdminCreate,
+    AdminSignin,
+    Customer,
+    CustomerCreate,
+    CustomerSignin,
+)
+from db.session import get_db
 
 router = APIRouter()
 
 """
 This file handles all the endpoints for user account creation and signin
 """
-
-
-# Customer routes
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def create_new_customer(customer: CustomerCreate, db: AsyncSession = Depends(get_db)):
@@ -37,20 +47,18 @@ async def signin(customer: CustomerSignin, db: AsyncSession = Depends(get_db)):
     if not db_customer or not verify_password(customer.password, db_customer.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
-    # Confirm that the object returned by the coroutine above is compatible with the create_access_token
     access_token = create_access_token(
-        data={"sub": Customer(
+        data={"user": Customer(
             id=db_customer.id,
-            first_name=db_customer.first_name,
-            last_name=db_customer.last_name,
-            is_active=db_customer.is_active,
-            user_type=db_customer.user_type
+            email=db_customer.email,
+            first_name=str(db_customer.first_name),
+            last_name=str(db_customer.last_name),
+            is_active=bool(db_customer.is_active),
+            user_type=str(db_customer.user_type)
         )}
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "Bearer"}
 
-
-# Admin routes
 
 @router.post("/admin/signup", status_code=status.HTTP_201_CREATED)
 async def create_new_admin(admin: AdminCreate, db: AsyncSession = Depends(get_db)):
@@ -80,6 +88,5 @@ async def admin_signin(admin: AdminSignin, db: AsyncSession = Depends(get_db)):
             detail="Invalid credentials"
         )
 
-    # Confirm that the object returned by the coroutine above is compatible with the create_access_token
-    access_token = create_access_token(data={"sub": db_admin})
+    access_token = create_access_token(data={"user": db_admin})
     return {"access_token": access_token, "token_type": "bearer"}

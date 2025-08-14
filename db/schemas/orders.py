@@ -1,7 +1,9 @@
-from pydantic import BaseModel
-from uuid import UUID
-from typing import List
 from decimal import Decimal
+from typing import List
+from uuid import UUID
+
+from pydantic import BaseModel
+
 from .menu import Menu
 
 

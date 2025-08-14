@@ -1,4 +1,5 @@
-from sqlalchemy import Table, Column, UUID, ForeignKey
+from sqlalchemy import UUID, Column, ForeignKey, Table
+
 from ..base import Base
 
 order_menu_association = Table(

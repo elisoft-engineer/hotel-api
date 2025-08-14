@@ -1,10 +1,12 @@
-from ..base import Base
-from .mixins import Timestamp
-from sqlalchemy import Column, UUID, String, Text, DECIMAL, Integer, ForeignKey
 from uuid import uuid4
-from .enums import MenuCategory
+
+from sqlalchemy import DECIMAL, UUID, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+
+from ..base import Base
 from .assotiations import order_menu_association
+from .enums import MenuCategory
+from .mixins import Timestamp
 
 
 class Menu(Base, Timestamp):

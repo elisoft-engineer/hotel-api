@@ -1,6 +1,8 @@
+from uuid import UUID
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from uuid import UUID
+
 from db.models import notifications as models
 from db.models.enums import NotificationStatus
 from db.schemas import notifications as schemas

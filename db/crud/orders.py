@@ -1,9 +1,12 @@
+from uuid import UUID
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from uuid import UUID
+
 from db.models import orders as models
-from db.schemas import orders as schemas
 from db.models.enums import OrderStatus
+from db.schemas import orders as schemas
+
 from .menu import get_menu_item
 
 """

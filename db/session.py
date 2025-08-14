@@ -1,7 +1,9 @@
+from typing import AsyncGenerator
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
+
 from .base import engine
-from typing import AsyncGenerator
 
 """
 This file handles the database connection management during CRUD activities

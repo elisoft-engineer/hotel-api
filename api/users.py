@@ -1,11 +1,21 @@
-from fastapi import APIRouter, Depends, status, HTTPException
-from db.session import get_db
-from sqlalchemy.ext.asyncio import AsyncSession
-from db.schemas.users import Customer, Admin, CustomerUpdate, AdminUpdate
 from typing import List
 from uuid import UUID
-from db.crud.users import get_customers, get_customer, update_customer, delete_customer, get_admins, get_admin, \
-    update_admin, delete_admin
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from db.crud.users import (
+    delete_admin,
+    delete_customer,
+    get_admin,
+    get_admins,
+    get_customer,
+    get_customers,
+    update_admin,
+    update_customer,
+)
+from db.schemas.users import Admin, AdminUpdate, Customer, CustomerUpdate
+from db.session import get_db
 
 router = APIRouter(tags=["users"])
 

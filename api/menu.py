@@ -1,15 +1,34 @@
-from fastapi import APIRouter, Depends, status, HTTPException, Form, UploadFile, File
-from db.session import get_db
-from sqlalchemy.ext.asyncio import AsyncSession
-from db.crud.menu import get_menu, create_menu, get_menu_item, update_menu, delete_menu, get_reviews, get_review, \
-    create_review, update_review, delete_review
-from db.schemas.menu import Menu, MenuCreate, MenuUpdate, Review, ReviewCreate, ReviewUpdate
-from typing import List
 from decimal import Decimal
-from uuid import UUID, uuid4
-from PIL import Image
 from os import path
+from typing import List
+from uuid import UUID, uuid4
+
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from PIL import Image
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from core.config import settings
+from db.crud.menu import (
+    create_menu,
+    create_review,
+    delete_menu,
+    delete_review,
+    get_menu,
+    get_menu_item,
+    get_review,
+    get_reviews,
+    update_menu,
+    update_review,
+)
+from db.schemas.menu import (
+    Menu,
+    MenuCreate,
+    MenuUpdate,
+    Review,
+    ReviewCreate,
+    ReviewUpdate,
+)
+from db.session import get_db
 
 router = APIRouter(prefix="/menu", tags=["menu"])
 

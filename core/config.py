@@ -1,6 +1,7 @@
 # core/config.py
+from os import makedirs, path
+
 from pydantic_settings import BaseSettings
-from os import path, makedirs
 
 
 class Settings(BaseSettings):

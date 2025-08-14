@@ -1,9 +1,12 @@
-from logging.config import fileConfig
-from alembic import context
-import sys
-import os
 import asyncio
+import os
+import sys
+from logging.config import fileConfig
+
+import alembic_postgresql_enum
 from dotenv import load_dotenv
+
+from alembic import context
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -15,7 +18,7 @@ config = context.config
 
 config.set_main_option("sqlalchemy.url", os.getenv('DATABASE_URL', ''))
 
-from db.base import engine, Base
+from db.base import Base, engine
 from db.models import menu, messages, notifications, orders, users
 
 if config.config_file_name is not None:
