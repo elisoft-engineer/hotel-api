@@ -1,9 +1,11 @@
 from uuid import uuid4
 
-from sqlalchemy import DECIMAL, UUID, Column, ForeignKey, Integer, String, Text
+from sqlalchemy import DECIMAL, UUID, Column, ForeignKey, Integer, String, Text, text
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 
-from ..base import Base
+from db.base import Base
+
 from .assotiations import order_menu_association
 from .enums import MenuCategory
 from .mixins import Timestamp
@@ -16,7 +18,12 @@ class Menu(Base, Timestamp):
     name = Column(String, index=True, nullable=False)
     description = Column(Text, nullable=False)
     price = Column(DECIMAL, nullable=False)
-    category = Column(String, nullable=False, default=MenuCategory.OTHER.value)
+    category = Column(
+        postgresql.ENUM(*[e.value for e in MenuCategory], name="menu_category", create_type=False),
+        default=MenuCategory.OTHER.value,
+        server_default=text(f"'{MenuCategory.OTHER.value}'::menu_category"),
+        nullable=False
+    )
     image = Column(String, nullable=True)
     thumbnail = Column(String, nullable=True)
 

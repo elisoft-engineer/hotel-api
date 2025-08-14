@@ -1,8 +1,10 @@
 from uuid import uuid4
 
-from sqlalchemy import UUID, Column, String
+from sqlalchemy import UUID, Column, String, text
+from sqlalchemy.dialects import postgresql
 
-from ..base import Base
+from db.base import Base
+
 from .enums import NotificationStatus
 from .mixins import Timestamp
 
@@ -14,7 +16,12 @@ class Notification(Base, Timestamp):
     message = Column(String, nullable=False)
     user_id = Column(UUID, nullable=False)
     user_type = Column(String, nullable=True)
-    status = Column(String, nullable=False, default=NotificationStatus.UNREAD.value)
+    status = Column(
+        postgresql.ENUM(*[e.value for e in NotificationStatus], name="notification_status", create_type=False),
+        default=NotificationStatus.UNREAD.value,
+        server_default=text(f"'{NotificationStatus.UNREAD.value}'::notification_status"),
+        nullable=False
+    )
 
     def __repr__(self):
         return f"{self.__class__.__name__}: {self.message}"

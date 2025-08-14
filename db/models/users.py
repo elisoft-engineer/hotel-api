@@ -1,9 +1,11 @@
 from uuid import uuid4
 
-from sqlalchemy import UUID, Boolean, Column, String
+from sqlalchemy import UUID, Boolean, Column, String, text
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import declarative_mixin, relationship
 
-from ..base import Base
+from db.base import Base
+
 from .enums import UserType
 from .mixins import Timestamp
 
@@ -26,7 +28,12 @@ class User:
 class Admin(Base, User, Timestamp):
     __tablename__ = "admins"
     employee_id = Column(String, index=True)
-    user_type = Column(String, nullable=False, default=UserType.ADMIN.value)
+    user_type = Column(
+        postgresql.ENUM(*[e.value for e in UserType], name="user_type", create_type=False),
+        default=UserType.ADMIN.value,
+        server_default=text(f"'{UserType.ADMIN.value}'::user_type"),
+        nullable=False
+    )
 
 
 class Customer(Base, User, Timestamp):
@@ -34,7 +41,12 @@ class Customer(Base, User, Timestamp):
 
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
-    user_type = Column(String, nullable=False, default=UserType.CUSTOMER.value)
+    user_type = user_type = Column(
+        postgresql.ENUM(*[e.value for e in UserType], name="user_type", create_type=False),
+        default=UserType.CUSTOMER.value,
+        server_default=text(f"'{UserType.CUSTOMER.value}'::user_type"),
+        nullable=False
+    )
 
     reviews = relationship("Review", back_populates="customer")
     orders = relationship("Order", back_populates="customer")
