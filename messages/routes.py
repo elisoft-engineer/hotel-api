@@ -1,10 +1,10 @@
 from typing import List
 from uuid import UUID
 
-from core.database import get_db
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.database import get_db
 from messages.crud import create_message, delete_message, get_message, get_messages
 from messages.schemas import Message, MessageCreate
 
