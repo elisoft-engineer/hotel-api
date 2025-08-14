@@ -5,11 +5,11 @@ from fastapi import FastAPI
 from fastapi_standalone_docs import StandaloneDocs
 
 from auth import routes as auth_routes
+from core.conf import settings
 from menu import routes as menu_routes
 from messages import routes as message_routes
 from notifications import routes as notification_routes
 from orders import routes as order_routes
-from core.conf import settings
 
 load_dotenv(path.join(settings.BASE_DIR, ".env"))
 

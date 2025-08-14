@@ -1,32 +1,33 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.crud import (
     create_admin,
     create_customer,
-    get_admin_by_email,
-    get_customer_by_email,
     delete_admin,
     delete_customer,
     get_admin,
+    get_admin_by_email,
     get_admins,
     get_customer,
+    get_customer_by_email,
     get_customers,
     update_admin,
     update_customer,
 )
-from auth.schemas import Token
 from auth.schemas import (
     Admin,
     AdminCreate,
-    AdminUpdate,
     AdminSignin,
+    AdminUpdate,
     Customer,
     CustomerCreate,
-    CustomerUpdate,
     CustomerSignin,
+    CustomerUpdate,
+    Token,
 )
 from core.database import get_db
 from core.security import create_access_token, verify_password

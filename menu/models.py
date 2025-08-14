@@ -10,7 +10,6 @@ from core.models import Timestamp
 from orders.models import order_menu_association
 
 
-
 class MenuCategory(Enum):
     MAIN_COURSES = "main_courses"
     DRINKS = "drinks"

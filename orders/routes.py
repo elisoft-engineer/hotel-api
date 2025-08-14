@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.database import get_db
 from orders.crud import (
     create_order,
     delete_order,
@@ -12,7 +13,6 @@ from orders.crud import (
     update_order,
 )
 from orders.schemas import Order, OrderCreate
-from core.database import get_db
 
 """
 The following are the api endpoints for orders

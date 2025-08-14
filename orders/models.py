@@ -1,15 +1,12 @@
-from uuid import uuid4
 from enum import Enum
+from uuid import uuid4
 
-from sqlalchemy import DECIMAL, UUID, Column, ForeignKey, text
+from sqlalchemy import DECIMAL, UUID, Column, ForeignKey, Table, text
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 
 from core.database import Base
 from core.models import Timestamp
-
-from sqlalchemy import UUID, Column, ForeignKey, Table
-
 
 order_menu_association = Table(
     "order_menu",

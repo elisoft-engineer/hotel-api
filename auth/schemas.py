@@ -1,9 +1,10 @@
-from pydantic import BaseModel, EmailStr
 from typing import List
 from uuid import UUID
 
+from pydantic import BaseModel, EmailStr
 
 from notifications.schemas import Notification
+
 
 class Token(BaseModel):
     access_token: str

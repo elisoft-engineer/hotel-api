@@ -1,5 +1,4 @@
 import shutil
-
 from decimal import Decimal
 from os import path
 from typing import List
@@ -10,6 +9,7 @@ from PIL import Image
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.conf import settings
+from core.database import get_db
 from menu.crud import (
     create_menu,
     create_review,
@@ -30,7 +30,6 @@ from menu.schemas import (
     ReviewCreate,
     ReviewUpdate,
 )
-from core.database import get_db
 
 router = APIRouter(prefix="/menu", tags=["menu"])
 

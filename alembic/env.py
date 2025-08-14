@@ -19,11 +19,11 @@ config = context.config
 config.set_main_option("sqlalchemy.url", os.getenv('DATABASE_URL', ''))
 
 from auth import models
+from core.database import Base, engine
 from menu import models
 from messages import models
 from notifications import models
 from orders import models
-from core.database import Base, engine
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

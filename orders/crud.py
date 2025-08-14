@@ -3,9 +3,9 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from menu.crud import get_menu_item
 from orders import models, schemas
 
-from menu.crud import get_menu_item
 
 async def get_orders(
         db: AsyncSession,

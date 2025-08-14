@@ -1,12 +1,12 @@
 from typing import List
 from uuid import UUID
 
+from db.session import get_db
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from messages.crud import create_message, delete_message, get_message, get_messages
 from messages.schemas import Message, MessageCreate
-from db.session import get_db
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
