@@ -2,8 +2,8 @@ from uuid import uuid4
 
 from sqlalchemy import UUID, Column, String, Text
 
-from ..base import Base
-from ..db.models.mixins import Timestamp
+from core.database import Base
+from core.models import Timestamp
 
 
 class Message(Base, Timestamp):
