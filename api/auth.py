@@ -30,7 +30,7 @@ async def create_new_customer(customer: CustomerCreate, db: AsyncSession = Depen
     existing_customer = await get_customer_by_email(db, customer.email)
     if existing_customer:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Customer with that email already exists"
         )
 
@@ -45,7 +45,7 @@ async def create_new_customer(customer: CustomerCreate, db: AsyncSession = Depen
 async def signin(customer: CustomerSignin, db: AsyncSession = Depends(get_db)):
     db_customer = await get_customer_by_email(db, customer.email)
     if not db_customer or not verify_password(customer.password, db_customer.password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid credentials")
 
     access_token = create_access_token(
         data={"user": Customer(
@@ -65,7 +65,7 @@ async def create_new_admin(admin: AdminCreate, db: AsyncSession = Depends(get_db
     existing_admin = await get_admin_by_email(db, admin.email)
     if existing_admin:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Admin with that email already exists"
         )
 
@@ -84,7 +84,7 @@ async def admin_signin(admin: AdminSignin, db: AsyncSession = Depends(get_db)):
     db_admin = await get_admin_by_email(db, admin.email)
     if not db_admin or not verify_password(admin.password, db_admin.password):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid credentials"
         )
 

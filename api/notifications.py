@@ -34,11 +34,11 @@ async def create_new_notification(notification: NotificationCreate, db: AsyncSes
 # Getting the user notifications whether unread or all of them, with pagination through offset and limit.
 @router.get("/", response_model=List[Notification], status_code=status.HTTP_200_OK)
 async def read_user_notifications(
-        user_id: UUID | None = None,
-        notification_status: str | None = None,
-        db: AsyncSession = Depends(get_db),
-        offset: int | None = None,
-        limit: int | None = None
+    user_id: UUID | None = None,
+    notification_status: str | None = None,
+    db: AsyncSession = Depends(get_db),
+    offset: int | None = None,
+    limit: int | None = None
 ):
     notifications = await get_notifications(db, user_id, notification_status, offset, limit)
     return notifications
@@ -46,16 +46,20 @@ async def read_user_notifications(
 
 # Marking all user notifications as read
 @router.patch("/", status_code=status.HTTP_200_OK)
-async def mark_user_notifications_as_read(user_id: UUID | None = None, db: AsyncSession = Depends(get_db)):
+async def mark_user_notifications_as_read(
+    user_id: UUID | None = None, db: AsyncSession = Depends(get_db)
+):
     if not user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Permission denied")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Permission denied"
+        )
     return await patch_notifications(db, user_id)
 
 
 # Marking one notification as read
 @router.patch("/{notification_id}", status_code=status.HTTP_200_OK)
 async def mark_user_notification_as_read(
-        notification_id: UUID, user_id: UUID | None = None, db: AsyncSession = Depends(get_db)
+    notification_id: UUID, user_id: UUID = None, db: AsyncSession = Depends(get_db)
 ):
     notification = await get_notification(db, notification_id)
     if not notification:
@@ -67,7 +71,7 @@ async def mark_user_notification_as_read(
 
 @router.delete("/{notification_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_notification_info(
-        notification_id: UUID, user_id: UUID | None = None, db: AsyncSession = Depends(get_db)
+    notification_id: UUID, user_id: UUID | None = None, db: AsyncSession = Depends(get_db)
 ):
     notification = await get_notification(db, notification_id)
     if not notification:

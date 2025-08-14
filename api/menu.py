@@ -1,3 +1,5 @@
+import shutil
+
 from decimal import Decimal
 from os import path
 from typing import List
@@ -42,40 +44,50 @@ async def read_menu(db: AsyncSession = Depends(get_db), offset: int | None = Non
     menu = await get_menu(db, offset, limit)
     return menu
 
+THUMB_WIDTH = 300
+RETINA_FACTOR = 2
+JPEG_QUALITY = 80
+WEBP_QUALITY = 80
+
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_new_menu_item(
-        name: str = Form(...),
-        description: str = Form(...),
-        price: Decimal = Form(...),
-        category: str = Form(...),
-        image: UploadFile = File(...),
-        db: AsyncSession = Depends(get_db)
+    name: str = Form(...),
+    description: str = Form(...),
+    price: Decimal = Form(...),
+    category: str = Form(...),
+    image: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db)
 ):
-    # Rename the image to avoid conflicts during writing in the file system
     image_filename = f"{uuid4().hex}_{image.filename}"
     image_path = path.join(settings.MENU_IMAGES_DIR, image_filename)
 
-    # Save the image
-    with open(image_path, "wb") as image_buffer:
-        image_buffer.write(image.file.read())
+    # stream-save the uploaded file to disk to avoid loading whole file into memory
+    with open(image_path, "wb") as out_f:
+        image.file.seek(0)
+        shutil.copyfileobj(image.file, out_f)
 
-    # Generate thumbnail and save it
+    # generate thumbnail(s)
     with Image.open(image_path) as img:
-        thumbnail_filename = f"thumb_{uuid4().hex}_{image_filename}"
-        thumbnail_path = path.join(settings.MENU_THUMBNAILS_DIR, thumbnail_filename)
-        aspect_ratio = img.size[0] / img.size[1]
-        output_width = 300
-        img.thumbnail((output_width, output_width * aspect_ratio))
-        img.save(thumbnail_path)
+        if img.mode not in ("RGB", "L"):
+            img = img.convert("RGB")
 
-    # Create the menu_create obj and parse it to create_menu
+        aspect = img.width / img.height
+        thumb_w = THUMB_WIDTH
+        thumb_h = int(round(thumb_w / aspect))
+        thumb_filename = f"thumb_{uuid4().hex}_{image_filename}"
+        thumb_path = path.join(settings.MENU_THUMBNAILS_DIR, thumb_filename)
+        thumb = img.copy()
+        thumb = thumb.resize((thumb_w, thumb_h), resample=Image.LANCZOS)
+
+        thumb.save(thumb_path, format="JPEG", quality=JPEG_QUALITY, optimize=True)
+    
     menu = MenuCreate(
         name=name,
         description=description,
         price=price,
         category=category,
         image=image_path,
-        thumbnail=thumbnail_path
+        thumbnail=thumb_path
     )
 
     db_menu = await create_menu(db, menu)
