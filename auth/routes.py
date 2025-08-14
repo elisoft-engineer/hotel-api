@@ -1,23 +1,35 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List
+from uuid import UUID
 
-from core.security import create_access_token, verify_password
 from auth.crud import (
     create_admin,
     create_customer,
     get_admin_by_email,
     get_customer_by_email,
+    delete_admin,
+    delete_customer,
+    get_admin,
+    get_admins,
+    get_customer,
+    get_customers,
+    update_admin,
+    update_customer,
 )
 from auth.schemas import Token
-from db.schemas.users import (
+from auth.schemas import (
     Admin,
     AdminCreate,
+    AdminUpdate,
     AdminSignin,
     Customer,
     CustomerCreate,
+    CustomerUpdate,
     CustomerSignin,
 )
-from db.session import get_db
+from core.database import get_db
+from core.security import create_access_token, verify_password
 
 router = APIRouter()
 
@@ -91,29 +103,6 @@ async def admin_signin(admin: AdminSignin, db: AsyncSession = Depends(get_db)):
     access_token = create_access_token(data={"user": db_admin})
     return {"access_token": access_token, "token_type": "Bearer"}
 
-from typing import List
-from uuid import UUID
-
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from auth.crud import (
-    delete_admin,
-    delete_customer,
-    get_admin,
-    get_admins,
-    get_customer,
-    get_customers,
-    update_admin,
-    update_customer,
-)
-from db.schemas.users import Admin, AdminUpdate, Customer, CustomerUpdate
-from db.session import get_db
-
-router = APIRouter(tags=["users"])
-
-
-# Customer routes
 
 @router.get("/customers", response_model=List[Customer], status_code=status.HTTP_200_OK)
 async def read_customers(db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None):

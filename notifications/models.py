@@ -1,12 +1,11 @@
 from uuid import uuid4
+from enum import Enum
 
 from sqlalchemy import UUID, Column, String, text
 from sqlalchemy.dialects import postgresql
 
-from db.base import Base
-
-from ..db.models.enums import NotificationStatus
-from ..db.models.mixins import Timestamp
+from core.database import Base
+from core.models import Timestamp
 
 
 class NotificationStatus(Enum):

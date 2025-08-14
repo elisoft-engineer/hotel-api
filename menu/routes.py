@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, s
 from PIL import Image
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.config import settings
+from core.conf import settings
 from menu.crud import (
     create_menu,
     create_review,
@@ -30,7 +30,7 @@ from menu.schemas import (
     ReviewCreate,
     ReviewUpdate,
 )
-from db.session import get_db
+from core.database import get_db
 
 router = APIRouter(prefix="/menu", tags=["menu"])
 
@@ -131,13 +131,6 @@ async def read_menu_item_reviews(
 ):
     reviews = await get_reviews(db, menu_id, offset, limit)
     return reviews
-
-
-"""
-As for the creation of reviews, I shall work on the scenario where a customer had previously reviewed an menu
-item. We can maybe update the existing one or otherwise. As of the time of this docstring, the ReviewCreate and
-ReviewUpdate are quite different, thus I am going to create the two endpoints independent of each other.
-"""
 
 
 @router.post("/{menu_id}/reviews", status_code=status.HTTP_201_CREATED)

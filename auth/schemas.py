@@ -1,20 +1,13 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from typing import List
+from uuid import UUID
 
-# Handle the token data schema later
 
-# class TokenData(BaseModel):
+from notifications.schemas import Notification
 
 class Token(BaseModel):
     access_token: str
     token_type: str
-
-
-from typing import List
-from uuid import UUID
-
-from pydantic import BaseModel, EmailStr
-
-from .notifications import Notification
 
 
 class AbstractUser(BaseModel):

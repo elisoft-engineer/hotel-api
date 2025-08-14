@@ -3,9 +3,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from notifications import models as models
-from db.models.enums import NotificationStatus
-from notifications import schemas as schemas
+from notifications import models, schemas
 
 
 async def get_notifications(
@@ -16,7 +14,7 @@ async def get_notifications(
         limit: int | None = None
 ):
     # in case a notification status is parsed
-    if notification_status and notification_status in [status.value for status in NotificationStatus]:
+    if notification_status and notification_status in [status.value for status in models.NotificationStatus]:
         results = await db.execute(
             select(models.Notification).where(
                 models.Notification.user_id == user_id and models.Notification.status == notification_status).offset(
@@ -30,10 +28,10 @@ async def get_notifications(
 
 
 async def patch_notifications(db: AsyncSession, user_id: UUID):
-    unread_notifications = await get_notifications(db, user_id, notification_status=NotificationStatus.UNREAD.value)
+    unread_notifications = await get_notifications(db, user_id, notification_status=models.NotificationStatus.UNREAD.value)
 
     for notification in unread_notifications:  # confirm about the unread_notifications sequence
-        setattr(notification, "status", NotificationStatus.READ.value)
+        setattr(notification, "status", models.NotificationStatus.READ.value)
         db.add(notification)
         await db.commit()
         await db.refresh(notification)
@@ -60,7 +58,7 @@ async def patch_notification(db: AsyncSession, notification_id: UUID):
     if not notification:
         return None
     
-    setattr(notification, "status", NotificationStatus.READ.value)
+    setattr(notification, "status", models.NotificationStatus.READ.value)
     db.add(notification)
     await db.commit()
     await db.refresh(notification)

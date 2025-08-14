@@ -3,19 +3,9 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from orders import models as models
-from db.models.enums import OrderStatus
-from orders import schemas as schemas
+from orders import models, schemas
 
-from ..menu.crud import get_menu_item
-
-"""
-This file handles all the crud utils for the orders api
-"""
-
-
-# ### The get_orders util handles all types of order list queries. This is achieved through the query params. ###
-# ### This helps avoid boilerplate code and easier handling of api endpoints ###
+from menu.crud import get_menu_item
 
 async def get_orders(
         db: AsyncSession,
@@ -27,7 +17,7 @@ async def get_orders(
     # this block is executed when a customer id is parsed
     if customer_id:
         # if the order status is parsed, filter the order list using the status provided
-        if order_status and order_status in [status.value for status in OrderStatus]:
+        if order_status and order_status in [status.value for status in models.OrderStatus]:
             results = await db.execute(
                 select(models.Order).where(
                     models.Order.customer_id == customer_id and models.Order.status == order_status).offset(
@@ -40,7 +30,7 @@ async def get_orders(
             )
     else:
         # where there is no specified customer and the order status is parsed
-        if order_status and order_status in [status.value for status in OrderStatus]:
+        if order_status and order_status in [status.value for status in models.OrderStatus]:
             results = await db.execute(
                 select(models.Order).where(models.Order.status == order_status).offset(offset).limit(limit)
             )
@@ -83,7 +73,7 @@ async def create_order(db: AsyncSession, order: schemas.OrderCreate):
 # The update crud only updates the order status
 async def update_order(db: AsyncSession, order_id: UUID, order_status: str | None = None):
     order = await get_order(db, order_id)
-    if not order or order_status not in [status.value for status in OrderStatus]:
+    if not order or order_status not in [status.value for status in models.OrderStatus]:
         return None
 
     setattr(order, "status", order_status)

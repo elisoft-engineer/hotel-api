@@ -13,7 +13,7 @@ from notifications.crud import (
     patch_notifications,
 )
 from notifications.schemas import Notification, NotificationCreate
-from db.session import get_db
+from core.database import get_db
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 

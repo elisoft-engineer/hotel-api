@@ -3,9 +3,8 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from auth import models, schemas
 from core.security import get_password_hash
-from auth import models as models
-from db.schemas import users as schemas
 
 """
 The following are the admin CRUD utilities

@@ -12,7 +12,7 @@ from orders.crud import (
     update_order,
 )
 from orders.schemas import Order, OrderCreate
-from db.session import get_db
+from core.database import get_db
 
 """
 The following are the api endpoints for orders

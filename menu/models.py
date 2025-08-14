@@ -1,14 +1,14 @@
+from enum import Enum
 from uuid import uuid4
 
 from sqlalchemy import DECIMAL, UUID, Column, ForeignKey, Integer, String, Text, text
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 
-from db.base import Base
+from core.database import Base
+from core.models import Timestamp
+from orders.models import order_menu_association
 
-from ..db.models.assotiations import order_menu_association
-from ..db.models.enums import MenuCategory
-from ..db.models.mixins import Timestamp
 
 
 class MenuCategory(Enum):

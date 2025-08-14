@@ -1,13 +1,12 @@
+from enum import Enum
 from uuid import uuid4
 
 from sqlalchemy import UUID, Boolean, Column, String, text
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import declarative_mixin, relationship
 
-from db.base import Base
-
-from ..db.models.enums import UserType
-from ..db.models.mixins import Timestamp
+from core.database import Base
+from core.models import Timestamp
 
 """
 A base user class is more robust and precise as we just have to subclass it to
