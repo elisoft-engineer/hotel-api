@@ -1,7 +1,9 @@
+from uuid import uuid4
+
+from sqlalchemy import UUID, Column, String, Text
+
 from ..base import Base
 from .mixins import Timestamp
-from sqlalchemy import Column, UUID, String, Text
-from uuid import uuid4
 
 
 class Message(Base, Timestamp):
