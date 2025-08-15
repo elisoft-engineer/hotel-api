@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_LIFETIME: int
+    REFRESH_TOKEN_LIFETIME: int
     DATABASE_URL: str
 
     BASE_DIR: str = path.dirname(path.dirname(path.abspath(__file__)))
