@@ -1,9 +1,7 @@
-from typing import List
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
-
-from notifications.schemas import Notification
 
 
 class Token(BaseModel):
@@ -11,60 +9,31 @@ class Token(BaseModel):
     token_type: str
 
 
-class AbstractUser(BaseModel):
+class UserBase(BaseModel):
     email: EmailStr
 
 
-class AdminBase(AbstractUser):
-    employee_id: str
-
-
-class AdminCreate(AdminBase):
+class UserCreate(UserBase):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     password: str
 
 
-class AdminSignin(AbstractUser):
+class UserSignin(UserBase):
     password: str
 
 
-class AdminUpdate(AdminBase):
-    pass
-
-
-class Admin(AdminBase):
-    id: UUID
-    is_active: bool
-    user_type: str
-    notifications: List[Notification] = []
-
-    class Config:
-        from_attributes: bool = True
-
-
-class CustomerBase(AbstractUser):
-    pass
-
-
-class CustomerCreate(CustomerBase):
-    password: str
-
-
-class CustomerSignin(CustomerBase):
-    password: str
-
-
-class CustomerUpdate(CustomerBase):
+class UserUpdate(UserBase):
     first_name: str
     last_name: str
 
 
-class Customer(CustomerBase):
+class User(UserBase):
     id: UUID
     first_name: str
     last_name: str
     is_active: bool
-    user_type: str
-    notifications: List[Notification] = []
+    is_staff: bool
 
     from_attributes: bool = True
 
