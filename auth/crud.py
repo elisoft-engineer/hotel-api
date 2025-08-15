@@ -4,113 +4,54 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from auth import models, schemas
-from core.security import get_password_hash
-
-"""
-The following are the admin CRUD utilities
-"""
+from auth.utils import get_password_hash
 
 
-async def get_admins(db: AsyncSession, offset: int | None = None, limit: int | None = None):
-    results = await db.execute(select(models.Admin).offset(offset).limit(limit))
+async def get_users(db: AsyncSession, offset: int | None = None, limit: int | None = None):
+    results = await db.execute(select(models.User).offset(offset).limit(limit))
     return results.scalars().all()
 
 
-async def get_admin(db: AsyncSession, admin_id: UUID):
-    result = await db.execute(select(models.Admin).where(models.Admin.id == admin_id))
+async def get_user(db: AsyncSession, user_id: UUID):
+    result = await db.execute(select(models.User).where(models.User.id == user_id))
     return result.scalars().first()
 
 
-async def get_admin_by_email(db: AsyncSession, email: str):
-    result = await db.execute(select(models.Admin).where(models.Admin.email == email))
+async def get_user_by_email(db: AsyncSession, email: str):
+    result = await db.execute(select(models.User).where(models.User.email == email))
     return result.scalars().first()
 
 
-async def create_admin(db: AsyncSession, admin: schemas.AdminCreate):
-    admin_data = admin.model_dump()
-    admin_data['password'] = get_password_hash(admin.password)
-    db_admin = models.Admin(**admin_data)
-    db.add(db_admin)
+async def create_user(db: AsyncSession, user: schemas.UserCreate):
+    user_data = user.model_dump()
+    user_data['password'] = get_password_hash(user.password)
+    db_user = models.User(**user_data)
+    db.add(db_user)
     await db.commit()
-    await db.refresh(db_admin)
-    return db_admin
+    await db.refresh(db_user)
+    return db_user
 
 
-async def update_admin(db: AsyncSession, admin_id: UUID, admin_update: schemas.AdminUpdate):
-    admin = await get_admin(db, admin_id)
-    if not admin:
+async def update_user(db: AsyncSession, user_id: UUID, user_update: schemas.UserUpdate):
+    user = await get_user(db, user_id)
+    if not user:
         return None
 
-    update_data = admin_update.model_dump(exclude_unset=True)
+    update_data = user_update.model_dump(exclude_unset=True)
     for key, value in update_data:
-        setattr(admin, key, value)
+        setattr(user, key, value)
 
-    db.add(admin)
+    db.add(user)
     await db.commit()
-    await db.refresh(admin)
-    return admin
+    await db.refresh(user)
+    return user
 
 
-async def delete_admin(db: AsyncSession, admin_id: UUID):
-    admin = await get_admin(db, admin_id)
-    if not admin:
+async def delete_user(db: AsyncSession, user_id: UUID):
+    user = await get_user(db, user_id)
+    if not user:
         return None
 
-    await db.delete(admin)
+    await db.delete(user)
     await db.commit()
-    return {"detail": "Admin account deleted successfully"}
-
-
-"""
-The following are the customer CRUD utilities
-"""
-
-
-async def get_customers(db: AsyncSession, offset: int | None = None, limit: int | None = None):
-    results = await db.execute(select(models.Customer).offset(offset).limit(limit))
-    return results.scalars().all()
-
-
-async def get_customer(db: AsyncSession, customer_id: UUID):
-    result = await db.execute(select(models.Customer).where(models.Customer.id == customer_id))
-    return result.scalars().first()
-
-
-async def get_customer_by_email(db: AsyncSession, email: str):
-    result = await db.execute(select(models.Customer).where(models.Customer.email == email))
-    return result.scalars().first()
-
-
-async def create_customer(db: AsyncSession, customer: schemas.CustomerCreate):
-    customer_data = customer.model_dump()
-    customer_data['password'] = get_password_hash(customer.password)
-    db_customer = models.Customer(**customer_data)
-    db.add(db_customer)
-    await db.commit()
-    await db.refresh(db_customer)
-    return db_customer
-
-
-async def update_customer(db: AsyncSession, customer_id: UUID, customer_update: schemas.CustomerUpdate):
-    customer = await get_customer(db, customer_id)
-    if not customer:
-        return None
-
-    update_data = customer_update.model_dump(exclude_unset=True)
-    for key, value in update_data:
-        setattr(customer, key, value)
-
-    db.add(customer)
-    await db.commit()
-    await db.refresh(customer)
-    return customer
-
-
-async def delete_customer(db: AsyncSession, customer_id: UUID):
-    customer = await get_customer(db, customer_id)
-    if not customer:
-        return None
-
-    await db.delete(customer)
-    await db.commit()
-    return {"detail": "Customer account deleted successfully"}
+    return {"detail": "user account deleted successfully"}
