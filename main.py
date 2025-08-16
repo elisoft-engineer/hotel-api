@@ -13,7 +13,7 @@ from orders import routes as order_routes
 
 load_dotenv(path.join(settings.BASE_DIR, ".env"))
 
-app = FastAPI()
+app = FastAPI(docs_url="/swagger")
 StandaloneDocs(app=app, with_google_fonts=True)
 
 
