@@ -1,36 +1,71 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 
 from .crud import get_users, get_user, get_user_by_email, create_user, update_user, delete_user
-from .schemas import User, UserCreate, UserSignin, UserUpdate, Token
-from .utils import create_access_token, verify_password
+from .schemas import RefreshRequest, TokenResponse, User, UserCreate, UserSignin, UserUpdate, AuthResponse, VerifyRequest
+from .utils import create_token, TokenType, verify_password, verify_token
 
 router = APIRouter()
 
-@router.post("/token", status_code=status.HTTP_200_OK, response_model=Token)
+@router.post("/token", status_code=status.HTTP_200_OK, response_model=AuthResponse)
 async def signin(user: UserSignin, db: AsyncSession = Depends(get_db)):
     db_user = await get_user_by_email(db, user.email)
     if not db_user or not verify_password(user.password, str(db_user.password)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid credentials")
+    
+    data = {"user": User(
+        id=db_user.id,
+        email=db_user.email,
+        first_name=str(db_user.first_name),
+        last_name=str(db_user.last_name),
+        is_active=bool(db_user.is_active),
+        is_staff=bool(db_user.is_staff)
+    )}
 
-    access_token = create_access_token(
-        data={"user": User(
-            id=db_user.id,
-            email=db_user.email,
-            first_name=str(db_user.first_name),
-            last_name=str(db_user.last_name),
-            is_active=bool(db_user.is_active),
-            is_staff=bool(db_user.is_staff)
-        )}
-    )
-    return Token(access_token=access_token, token_type='Bearer')
+    access_token = create_token(TokenType.ACCESS, data)
+    refresh_token = create_token(TokenType.REFRESH, {'sub': data['user'].id})
 
-@router.post("/signup", status_code=status.HTTP_201_CREATED)
+    return AuthResponse( access_token=access_token, refresh_token=refresh_token, token_type='Bearer')
+
+
+@router.post('/token/refresh', response_model=TokenResponse, status_code=status.HTTP_200_OK)
+async def refresh_access_token(payload: RefreshRequest, db: AsyncSession = Depends(get_db)):
+    token = payload.refresh
+    claims = verify_token(token, TokenType.REFRESH)
+    user_id = claims.get('sub')
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
+
+    user = await get_user(db, user_id)
+    if not user or not getattr(user, "is_active", True):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User inactive or not found")
+    
+    access_payload = {"user": User(
+        id=user.id,
+        email=user.email,
+        first_name=str(user.first_name),
+        last_name=str(user.last_name),
+        is_active=bool(user.is_active),
+        is_staff=bool(user.is_staff)
+    )}
+
+    new_token = create_token(TokenType.ACCESS, access_payload)
+    return TokenResponse(token=new_token, token_type='Bearer')
+
+
+@router.post("/token/verify", status_code=status.HTTP_200_OK)
+async def verify_refresh_token(payload: VerifyRequest):
+    _ = verify_token(payload.refresh, TokenType.REFRESH)
+    return Response(None, status.HTTP_200_OK)
+    
+
+
+@router.post("/users", status_code=status.HTTP_201_CREATED)
 async def create_new_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     existing_user = await get_user_by_email(db, user.email)
     if existing_user:
@@ -41,7 +76,9 @@ async def create_new_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
 
     db_user = await create_user(db, user)
     if not db_user:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating account")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating account"
+        )
 
     return {"detail": "Account created successfully"}
 
