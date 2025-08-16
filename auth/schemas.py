@@ -4,9 +4,23 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr
 
 
-class Token(BaseModel):
+class AuthResponse(BaseModel):
     access_token: str
+    refresh_token: str
     token_type: str
+
+
+class TokenResponse(BaseModel):
+    token: str
+    token_type: str
+
+
+class RefreshRequest(BaseModel):
+    refresh: str
+
+
+class VerifyRequest(BaseModel):
+    refresh: str
 
 
 class UserBase(BaseModel):
