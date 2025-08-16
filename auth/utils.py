@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta, timezone
+from enum import Enum
 from typing import Optional
 
-from fastapi import HTTPException
-from jose import JWTError, jwt
+from fastapi import HTTPException, status
+from jose import jwt
+from jose.exceptions import JWTError, JWTClaimsError, ExpiredSignatureError
 from passlib.context import CryptContext
 
 from core.conf import settings
@@ -18,15 +20,22 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
+class TokenType(Enum):
+    ACCESS = "access"
+    REFRESH = "refresh"
+    
+
+def create_token(token_type: TokenType, data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(tz=timezone.utc) + expires_delta
     else:
-        expire = datetime.now(tz=timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_LIFETIME)
-    to_encode.update({"exp": expire})
+        expire = datetime.now(tz=timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_LIFETIME) \
+            if token_type == TokenType.ACCESS else timedelta(days=settings.REFRESH_TOKEN_LIFETIME)
+    to_encode.update({"exp": expire, "type": "access" if token_type == TokenType.ACCESS else "refresh"})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
+
 
 def decode_token(token: str) -> Optional[dict]:
     try:
@@ -34,29 +43,16 @@ def decode_token(token: str) -> Optional[dict]:
         return payload
     except JWTError:
         return None
-    
-
-def create_refresh_token(
-    data: dict,
-    expires_delta: timedelta = timedelta(days=settings.REFRESH_TOKEN_LIFETIME)
-) -> str:
-    to_encode = data.copy()
-    expire = datetime.now(tz=timezone.utc) + expires_delta
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return encoded_jwt
 
 
-def verify_refresh_token(token: str) -> bool:
+def verify_token(token: str, token_type: TokenType) -> dict:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        exp = payload.get("exp")
-        is_valid = exp is not None \
-            and datetime.fromtimestamp(exp, tz=timezone.utc) <= datetime.now(tz=timezone.utc)
-        if not is_valid:
-            raise HTTPException(status_code=401, detail="Refresh token has expired")
-        return True
+        if payload.get('type') != token_type.value:
+            raise HTTPException(status_code=401, detail=f"Invalid {token_type} token")
+        return payload
 
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid refresh token")
-
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+    except (JWTClaimsError, JWTError):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
