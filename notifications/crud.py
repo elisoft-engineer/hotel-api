@@ -48,9 +48,8 @@ async def get_notification(db: AsyncSession, notification_id: UUID):
     return result.scalars().first()
 
 
-async def create_notification(db: AsyncSession, notification: schemas.NotificationCreate):
-    notification_data = notification.model_dump()
-    db_notification = models.Notification(**notification_data)
+async def create_notification(db: AsyncSession, user_id: UUID, message: str):
+    db_notification = models.Notification(user_id=user_id, message=message)
     db.add(db_notification)
     await db.commit()
     await db.refresh(db_notification)
