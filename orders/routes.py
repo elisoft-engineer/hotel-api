@@ -23,11 +23,11 @@ router = APIRouter(prefix="/orders", tags=["orders"])
 
 @router.get("/", response_model=List[Order], status_code=status.HTTP_200_OK)
 async def read_orders(
-        customer_id: UUID | None = None,
-        order_status: str | None = None,
-        db: AsyncSession = Depends(get_db),
-        offset: int | None = None,
-        limit: int | None = None
+    customer_id: UUID | None = None,
+    order_status: str | None = None,
+    db: AsyncSession = Depends(get_db),
+    offset: int | None = None,
+    limit: int | None = None
 ):
     return await get_orders(db, customer_id, order_status, offset, limit)
 
@@ -54,7 +54,7 @@ async def update_order_info(
 ):
     result = await update_order(db, order_id, order_status)
     if not result:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Order status parameter wrong")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid order status parameter")
     return result
 
 

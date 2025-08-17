@@ -31,7 +31,7 @@ async def create_new_notification(
 
 
 @router.get("", response_model=List[Notification], status_code=status.HTTP_200_OK)
-async def read_user_notifications(
+async def retrieve_notifications(
     user_id: UUID | None = None,
     notification_status: str | None = None,
     db: AsyncSession = Depends(get_db),
@@ -43,7 +43,7 @@ async def read_user_notifications(
 
 
 @router.patch("/", status_code=status.HTTP_200_OK)
-async def mark_user_notifications_as_read(
+async def mark_all_notifications_as_read(
     user_id: UUID | None = None, db: AsyncSession = Depends(get_db)
 ):
     if not user_id:
@@ -54,7 +54,7 @@ async def mark_user_notifications_as_read(
 
 
 @router.patch("/{notification_id}", status_code=status.HTTP_200_OK)
-async def mark_user_notification_as_read(
+async def mark_notification_as_read(
     notification_id: UUID, user_id: UUID = None, db: AsyncSession = Depends(get_db)
 ):
     notification = await get_notification(db, notification_id)

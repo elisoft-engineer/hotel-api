@@ -10,15 +10,15 @@ from messages.schemas import Message, MessageCreate
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
-@router.get("/", response_model=List[Message], status_code=status.HTTP_200_OK)
-async def read_messages(
+@router.get("", response_model=List[Message], status_code=status.HTTP_200_OK)
+async def retrieve_messages(
     db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None
 ):
     messages = await get_messages(db, offset, limit)
     return messages
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def create_new_message(message: MessageCreate, db: AsyncSession = Depends(get_db)):
     db_message = await create_message(db, message)
     if not db_message:
@@ -29,7 +29,7 @@ async def create_new_message(message: MessageCreate, db: AsyncSession = Depends(
 
 
 @router.get("/{message_id}", response_model=Message, status_code=status.HTTP_200_OK)
-async def read_message(message_id: UUID, db: AsyncSession = Depends(get_db)):
+async def retrive_message_info(message_id: UUID, db: AsyncSession = Depends(get_db)):
     message = await get_message(db, message_id)
     if not message:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Message not found")

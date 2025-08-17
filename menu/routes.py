@@ -17,7 +17,7 @@ router = APIRouter(prefix="/menu", tags=["menu"])
 
 
 @router.get("", response_model=List[Menu], status_code=status.HTTP_200_OK)
-async def read_menu(
+async def retrieve_menu(
     db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None
 ):
     menu = await get_menu(db, offset, limit)
@@ -79,7 +79,7 @@ async def create_new_menu_item(
 
 
 @router.get("/{menu_id}", response_model=Menu, status_code=status.HTTP_200_OK)
-async def read_menu_item(menu_id: UUID, db: AsyncSession = Depends(get_db)):
+async def retrieve_menu_item(menu_id: UUID, db: AsyncSession = Depends(get_db)):
     menu_item = await get_menu_item(db, menu_id)
     if not menu_item:
         raise HTTPException(
@@ -89,7 +89,7 @@ async def read_menu_item(menu_id: UUID, db: AsyncSession = Depends(get_db)):
 
 
 @router.put("/{menu_id}", response_model=Menu, status_code=status.HTTP_200_OK)
-async def update_menu_item_info(
+async def update_menu_item(
     menu_id: UUID, menu_update: MenuUpdate, db: AsyncSession = Depends(get_db)
 ):
     updated_menu_item = await update_menu(db, menu_id, menu_update)
@@ -101,7 +101,7 @@ async def update_menu_item_info(
 
 
 @router.delete("/{menu_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_menu_item_info(menu_id: UUID, db: AsyncSession = Depends(get_db)):
+async def delete_menu_item(menu_id: UUID, db: AsyncSession = Depends(get_db)):
     result = await delete_menu(db, menu_id)
     if not result:
         raise HTTPException(

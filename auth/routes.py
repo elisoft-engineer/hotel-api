@@ -95,7 +95,7 @@ async def create_new_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
 
 
 @user_router.get("", response_model=List[User], status_code=status.HTTP_200_OK)
-async def read_users(
+async def retrieve_user_list(
     db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None
 ):
     users = await get_users(db, offset, limit)
@@ -103,7 +103,7 @@ async def read_users(
 
 
 @user_router.get("/{user_id}", response_model=User, status_code=status.HTTP_200_OK)
-async def read_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
+async def retrieve_user_info(user_id: UUID, db: AsyncSession = Depends(get_db)):
     user = await get_user(db, user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
