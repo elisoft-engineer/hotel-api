@@ -6,17 +6,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 
-from .crud import get_users, get_user, get_user_by_email, create_user, update_user, delete_user
-from .schemas import RefreshRequest, TokenResponse, User, UserCreate, UserSignin, UserUpdate, AuthResponse, VerifyRequest
+from .crud import get_users, get_user, get_user_by_email, create_user, update_user,\
+    delete_user
+from .schemas import RefreshRequest, TokenResponse, User, UserCreate, UserSignin,\
+    UserUpdate, AuthResponse, VerifyRequest
 from .utils import create_token, TokenType, verify_password, verify_token
 
-router = APIRouter()
+token_router = APIRouter(prefix="/token", tags=["auth"])
 
-@router.post("/token", status_code=status.HTTP_200_OK, response_model=AuthResponse)
+@token_router.post("", status_code=status.HTTP_200_OK, response_model=AuthResponse)
 async def signin(user: UserSignin, db: AsyncSession = Depends(get_db)):
     db_user = await get_user_by_email(db, user.email)
     if not db_user or not verify_password(user.password, str(db_user.password)):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid credentials")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid credentials"
+        )
     
     data = {"user": User(
         id=db_user.id,
@@ -30,20 +34,26 @@ async def signin(user: UserSignin, db: AsyncSession = Depends(get_db)):
     access_token = create_token(TokenType.ACCESS, data)
     refresh_token = create_token(TokenType.REFRESH, {'sub': data['user'].id})
 
-    return AuthResponse( access_token=access_token, refresh_token=refresh_token, token_type='Bearer')
+    return AuthResponse(
+        access_token=access_token, refresh_token=refresh_token, token_type='Bearer'
+    )
 
 
-@router.post('/token/refresh', response_model=TokenResponse, status_code=status.HTTP_200_OK)
+@token_router.post('/refresh', response_model=TokenResponse, status_code=status.HTTP_200_OK)
 async def refresh_access_token(payload: RefreshRequest, db: AsyncSession = Depends(get_db)):
     token = payload.refresh
     claims = verify_token(token, TokenType.REFRESH)
     user_id = claims.get('sub')
     if not user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload"
+        )
 
     user = await get_user(db, user_id)
     if not user or not getattr(user, "is_active", True):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User inactive or not found")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="User inactive or not found"
+        )
     
     access_payload = {"user": User(
         id=user.id,
@@ -58,14 +68,15 @@ async def refresh_access_token(payload: RefreshRequest, db: AsyncSession = Depen
     return TokenResponse(token=new_token, token_type='Bearer')
 
 
-@router.post("/token/verify", status_code=status.HTTP_200_OK)
+@token_router.post("/verify", status_code=status.HTTP_200_OK)
 async def verify_refresh_token(payload: VerifyRequest):
     _ = verify_token(payload.refresh, TokenType.REFRESH)
     return Response(None, status.HTTP_200_OK)
-    
 
 
-@router.post("/users", status_code=status.HTTP_201_CREATED)
+user_router = APIRouter(prefix="/users", tags=["users"])
+
+@user_router.post("", status_code=status.HTTP_201_CREATED)
 async def create_new_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     existing_user = await get_user_by_email(db, user.email)
     if existing_user:
@@ -83,13 +94,15 @@ async def create_new_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     return {"detail": "Account created successfully"}
 
 
-@router.get("/users", response_model=List[User], status_code=status.HTTP_200_OK)
-async def read_users(db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None):
+@user_router.get("", response_model=List[User], status_code=status.HTTP_200_OK)
+async def read_users(
+    db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None
+):
     users = await get_users(db, offset, limit)
     return users
 
 
-@router.get("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK)
+@user_router.get("/{user_id}", response_model=User, status_code=status.HTTP_200_OK)
 async def read_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
     user = await get_user(db, user_id)
     if not user:
@@ -97,15 +110,17 @@ async def read_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
     return user
 
 
-@router.put("/user/{user_id}", response_model=User, status_code=status.HTTP_200_OK)
-async def update_user_info(user_id: UUID, user_update: UserUpdate, db: AsyncSession = Depends(get_db)):
+@user_router.put("/{user_id}", response_model=User, status_code=status.HTTP_200_OK)
+async def update_user_info(
+    user_id: UUID, user_update: UserUpdate, db: AsyncSession = Depends(get_db)
+):
     updated_user = await update_user(db, user_id, user_update)
     if not updated_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
     return updated_user
 
 
-@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@user_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_info(user_id: UUID, db: AsyncSession = Depends(get_db)):
     result = await delete_user(db, user_id)
     if not result:
