@@ -17,22 +17,20 @@ from notifications.schemas import Notification, NotificationCreate
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 
-"""
-This file handles the api endpoints for notifications
-"""
-
-
-# Creation of the notifications
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_new_notification(notification: NotificationCreate, db: AsyncSession = Depends(get_db)):
+@router.post("", status_code=status.HTTP_201_CREATED)
+async def create_new_notification(
+    notification: NotificationCreate, db: AsyncSession = Depends(get_db)
+):
     db_notification = await create_notification(db, notification)
     if not db_notification:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating notification")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error creating notification"
+        )
     return {"detail": "Notification created successfully"}
 
 
-# Getting the user notifications whether unread or all of them, with pagination through offset and limit.
-@router.get("/", response_model=List[Notification], status_code=status.HTTP_200_OK)
+@router.get("", response_model=List[Notification], status_code=status.HTTP_200_OK)
 async def read_user_notifications(
     user_id: UUID | None = None,
     notification_status: str | None = None,
@@ -44,7 +42,6 @@ async def read_user_notifications(
     return notifications
 
 
-# Marking all user notifications as read
 @router.patch("/", status_code=status.HTTP_200_OK)
 async def mark_user_notifications_as_read(
     user_id: UUID | None = None, db: AsyncSession = Depends(get_db)
@@ -56,7 +53,6 @@ async def mark_user_notifications_as_read(
     return await patch_notifications(db, user_id)
 
 
-# Marking one notification as read
 @router.patch("/{notification_id}", status_code=status.HTTP_200_OK)
 async def mark_user_notification_as_read(
     notification_id: UUID, user_id: UUID = None, db: AsyncSession = Depends(get_db)

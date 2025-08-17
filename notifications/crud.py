@@ -13,24 +13,26 @@ async def get_notifications(
         offset: int | None = None,
         limit: int | None = None
 ):
-    # in case a notification status is parsed
     if notification_status and notification_status in [status.value for status in models.NotificationStatus]:
         results = await db.execute(
             select(models.Notification).where(
-                models.Notification.user_id == user_id and models.Notification.status == notification_status).offset(
-                offset).limit(limit)
+                models.Notification.user_id == user_id and models.Notification.status == notification_status
+                ).offset(offset).limit(limit)
         )
-    else:  # return all the notifications associated with the user
+    else:
         results = await db.execute(
-            select(models.Notification).where(models.Notification.user_id == user_id).offset(offset).limit(limit)
+            select(models.Notification).where(models.Notification.user_id == user_id)\
+                .offset(offset).limit(limit)
         )
     return results.scalars().all()
 
 
 async def patch_notifications(db: AsyncSession, user_id: UUID):
-    unread_notifications = await get_notifications(db, user_id, notification_status=models.NotificationStatus.UNREAD.value)
+    unread_notifications = await get_notifications(
+        db, user_id, notification_status=models.NotificationStatus.UNREAD.value
+    )
 
-    for notification in unread_notifications:  # confirm about the unread_notifications sequence
+    for notification in unread_notifications:
         setattr(notification, "status", models.NotificationStatus.READ.value)
         db.add(notification)
         await db.commit()
@@ -40,7 +42,9 @@ async def patch_notifications(db: AsyncSession, user_id: UUID):
 
 
 async def get_notification(db: AsyncSession, notification_id: UUID):
-    result = await db.execute(select(models.Notification).where(models.Notification.id == notification_id))
+    result = await db.execute(
+        select(models.Notification).where(models.Notification.id == notification_id)
+    )
     return result.scalars().first()
 
 

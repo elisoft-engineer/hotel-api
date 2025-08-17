@@ -10,13 +10,10 @@ from messages.schemas import Message, MessageCreate
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
-"""
-This file handles the api endpoints for messages
-"""
-
-
 @router.get("/", response_model=List[Message], status_code=status.HTTP_200_OK)
-async def read_messages(db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None):
+async def read_messages(
+    db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None
+):
     messages = await get_messages(db, offset, limit)
     return messages
 
@@ -25,7 +22,9 @@ async def read_messages(db: AsyncSession = Depends(get_db), offset: int | None =
 async def create_new_message(message: MessageCreate, db: AsyncSession = Depends(get_db)):
     db_message = await create_message(db, message)
     if not db_message:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating message")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error creating message"
+        )
     return {"detail": "Message created successfully"}
 
 
