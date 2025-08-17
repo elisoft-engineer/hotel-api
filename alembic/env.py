@@ -24,6 +24,7 @@ from menu import models
 from messages import models
 from notifications import models
 from orders import models
+from reviews import models
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
