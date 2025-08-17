@@ -10,7 +10,7 @@ class ReviewBase(BaseModel):
 
 class ReviewCreate(ReviewBase):
     menu_id: UUID
-    customer_id: UUID
+    user_id: UUID
 
 
 class ReviewUpdate(ReviewBase):
@@ -20,7 +20,7 @@ class ReviewUpdate(ReviewBase):
 class Review(ReviewBase):
     id: UUID
     menu_id: UUID
-    customer_id: UUID
+    user_id: UUID
 
     class Config:
         from_attributes: bool = True
