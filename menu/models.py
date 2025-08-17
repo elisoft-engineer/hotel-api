@@ -1,7 +1,7 @@
 from enum import Enum
 from uuid import uuid4
 
-from sqlalchemy import DECIMAL, UUID, Column, ForeignKey, Integer, String, Text, text
+from sqlalchemy import DECIMAL, UUID, Column, String, Text, text
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 
@@ -11,7 +11,7 @@ from orders.models import order_menu_association
 
 
 class MenuCategory(Enum):
-    MAIN_COURSES = "main_courses"
+    MAIN_COURSES = "main courses"
     DRINKS = "drinks"
     OTHER = "other"
     # TODO: Add the enum types later
@@ -33,25 +33,8 @@ class Menu(Base, Timestamp):
     image = Column(String, nullable=True)
     thumbnail = Column(String, nullable=True)
 
-    reviews = relationship("Review", back_populates="item")
+    reviews = relationship("Review", back_populates="menu_item")
     orders = relationship("Order", secondary=order_menu_association, back_populates="items")
 
     def __repr__(self):
         return f"{self.__class__.name}: {self.name}"
-    
-
-class Review(Base, Timestamp):
-    __tablename__ = "reviews"
-
-    id = Column(UUID, default=uuid4, primary_key=True)
-    message = Column(Text, nullable=False)
-    rating = Column(Integer, nullable=False)
-
-    menu_id = Column(ForeignKey("menu.id"), nullable=False)
-    customer_id = Column(ForeignKey("customers.id"), nullable=False)
-
-    item = relationship("Menu", back_populates="reviews")
-    customer = relationship("Customer", back_populates="reviews")
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}: {str(self.message)[:15]}... {self.rating}"
