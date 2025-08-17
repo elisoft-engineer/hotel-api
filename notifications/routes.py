@@ -6,43 +6,32 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 from notifications.crud import (
-    create_notification,
     delete_notification,
     get_notification,
     get_notifications,
     patch_notification,
     patch_notifications,
 )
-from notifications.schemas import Notification, NotificationCreate
+from notifications.models import NotificationStatus
+from notifications.schemas import Notification
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 
-@router.post("", status_code=status.HTTP_201_CREATED)
-async def create_new_notification(
-    notification: NotificationCreate, db: AsyncSession = Depends(get_db)
-):
-    db_notification = await create_notification(db, notification)
-    if not db_notification:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error creating notification"
-        )
-    return {"detail": "Notification created successfully"}
-
-
 @router.get("", response_model=List[Notification], status_code=status.HTTP_200_OK)
 async def retrieve_notifications(
-    user_id: UUID | None = None,
     notification_status: str | None = None,
+    user_id: UUID = Depends(),  # TODO: implememnt the middlewares
     db: AsyncSession = Depends(get_db),
     offset: int | None = None,
     limit: int | None = None
 ):
-    notifications = await get_notifications(db, user_id, notification_status, offset, limit)
+    model_notification_status = NotificationStatus(notification_status) \
+        if notification_status in [s.value for s in NotificationStatus] else None
+    notifications = await get_notifications(db, user_id, model_notification_status, offset, limit)
     return notifications
 
 
-@router.patch("/", status_code=status.HTTP_200_OK)
+@router.patch("", status_code=status.HTTP_200_OK)
 async def mark_all_notifications_as_read(
     user_id: UUID | None = None, db: AsyncSession = Depends(get_db)
 ):
@@ -55,7 +44,7 @@ async def mark_all_notifications_as_read(
 
 @router.patch("/{notification_id}", status_code=status.HTTP_200_OK)
 async def mark_notification_as_read(
-    notification_id: UUID, user_id: UUID = None, db: AsyncSession = Depends(get_db)
+    notification_id: UUID, user_id: UUID = Depends(), db: AsyncSession = Depends(get_db)
 ):
     notification = await get_notification(db, notification_id)
     if not notification:
