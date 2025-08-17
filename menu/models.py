@@ -33,7 +33,6 @@ class Menu(Base, Timestamp):
     image = Column(String, nullable=True)
     thumbnail = Column(String, nullable=True)
 
-    reviews = relationship("Review", back_populates="menu_item")
     orders = relationship("Order", secondary=order_menu_association, back_populates="items")
 
     def __repr__(self):
