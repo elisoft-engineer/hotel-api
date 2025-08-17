@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from sqlalchemy import UUID, Column, String, text
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.orm import relationship
 
 from core.database import Base
 from core.models import Timestamp
@@ -19,13 +20,14 @@ class Notification(Base, Timestamp):
     id = Column(UUID, default=uuid4, primary_key=True)
     message = Column(String, nullable=False)
     user_id = Column(UUID, nullable=False)
-    user_type = Column(String, nullable=True)
     status = Column(
         postgresql.ENUM(*[e.value for e in NotificationStatus], name="notification_status", create_type=False),
         default=NotificationStatus.UNREAD.value,
         server_default=text(f"'{NotificationStatus.UNREAD.value}'::notification_status"),
         nullable=False
     )
+
+    user = relationship("User", back_populates="notificaltions")
 
     def __repr__(self):
         return f"{self.__class__.__name__}: {self.message}"
