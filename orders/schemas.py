@@ -8,7 +8,7 @@ from menu.schemas import Menu
 
 
 class OrderBase(BaseModel):
-    customer_id: UUID
+    user_id: UUID
 
 
 
