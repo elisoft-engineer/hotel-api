@@ -34,8 +34,8 @@ class Order(Base, Timestamp):
         nullable=False
     )
 
-    customer_id = Column(ForeignKey("customers.id"), nullable=False)
+    user_id = Column(ForeignKey("users.id"), nullable=False)
 
-    customer = relationship("Customer", back_populates="orders")
+    user = relationship("User", back_populates="orders")
     items = relationship("Menu", secondary=order_menu_association, back_populates="orders")
 
