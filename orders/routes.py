@@ -12,6 +12,7 @@ from orders.crud import (
     get_orders,
     update_order,
 )
+from orders.models import OrderStatus
 from orders.schemas import Order, OrderCreate
 
 """
@@ -21,7 +22,7 @@ The following are the api endpoints for orders
 router = APIRouter(prefix="/orders", tags=["orders"])
 
 
-@router.get("/", response_model=List[Order], status_code=status.HTTP_200_OK)
+@router.get("", response_model=List[Order], status_code=status.HTTP_200_OK)
 async def read_orders(
     customer_id: UUID | None = None,
     order_status: str | None = None,
@@ -29,10 +30,12 @@ async def read_orders(
     offset: int | None = None,
     limit: int | None = None
 ):
-    return await get_orders(db, customer_id, order_status, offset, limit)
+    model_order_status = OrderStatus(order_status) \
+        if order_status in [s.value for s in OrderStatus] else None
+    return await get_orders(db, customer_id, model_order_status, offset, limit)
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def create_new_order(order: OrderCreate, db: AsyncSession = Depends(get_db)):
     db_order = await create_order(db, order)
     if not db_order:
@@ -52,7 +55,9 @@ async def read_order(order_id: UUID, db: AsyncSession = Depends(get_db)):
 async def update_order_info(
         order_id: UUID, order_status: str | None = None, db: AsyncSession = Depends(get_db)
 ):
-    result = await update_order(db, order_id, order_status)
+    model_order_status = OrderStatus(order_status) \
+        if order_status in [s.value for s in OrderStatus] else None
+    result = await update_order(db, order_id, model_order_status)
     if not result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid order status parameter")
     return result
