@@ -26,12 +26,6 @@ async def create_message(db: AsyncSession, message: schemas.MessageCreate):
     return db_message
 
 
-"""
-There will be no implementation for  the message update since these messages are 
-only sent and do not need to be updated, only read
-"""
-
-
 async def delete_message(db: AsyncSession, message_id: UUID):
     message = await get_message(db, message_id)
     if not message:
