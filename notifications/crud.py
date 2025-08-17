@@ -9,15 +9,15 @@ from notifications import models, schemas
 async def get_notifications(
         db: AsyncSession,
         user_id: UUID,
-        notification_status: str | None = None,
+        notification_status: models.NotificationStatus | None = None,
         offset: int | None = None,
         limit: int | None = None
 ):
-    if notification_status and notification_status in [status.value for status in models.NotificationStatus]:
+    if notification_status:
         results = await db.execute(
             select(models.Notification).where(
                 models.Notification.user_id == user_id and models.Notification.status == notification_status
-                ).offset(offset).limit(limit)
+            ).offset(offset).limit(limit)
         )
     else:
         results = await db.execute(
@@ -29,11 +29,11 @@ async def get_notifications(
 
 async def patch_notifications(db: AsyncSession, user_id: UUID):
     unread_notifications = await get_notifications(
-        db, user_id, notification_status=models.NotificationStatus.UNREAD.value
+        db, user_id, notification_status=models.NotificationStatus.UNREAD
     )
 
     for notification in unread_notifications:
-        setattr(notification, "status", models.NotificationStatus.READ.value)
+        setattr(notification, "status", models.NotificationStatus.READ)
         db.add(notification)
         await db.commit()
         await db.refresh(notification)
