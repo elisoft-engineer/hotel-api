@@ -3,17 +3,9 @@ from uuid import UUID
 from pydantic import BaseModel
 
 
-class NotificationBase(BaseModel):
-    message: str
-
-
-class NotificationCreate(NotificationBase):
-    user_id: UUID
-    user_type: str
-
-
-class Notification(NotificationBase):
+class Notification(BaseModel):
     id: UUID
+    message: str
     user_id: UUID
     status: str
 
