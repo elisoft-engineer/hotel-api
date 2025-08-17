@@ -10,6 +10,7 @@ from menu import routes as menu_routes
 from messages import routes as message_routes
 from notifications import routes as notification_routes
 from orders import routes as order_routes
+from reviews import routes as review_routes
 
 load_dotenv(path.join(settings.BASE_DIR, ".env"))
 
@@ -17,8 +18,10 @@ app = FastAPI(docs_url="/swagger")
 StandaloneDocs(app=app, with_google_fonts=True)
 
 
-app.include_router(auth_routes.router)
+app.include_router(auth_routes.token_router)
+app.include_router(auth_routes.user_router)
 app.include_router(menu_routes.router)
-app.include_router(order_routes.router)
 app.include_router(message_routes.router)
 app.include_router(notification_routes.router)
+app.include_router(order_routes.router)
+app.include_router(review_routes.router)
