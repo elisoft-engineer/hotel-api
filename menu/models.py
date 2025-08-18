@@ -34,6 +34,7 @@ class Menu(Base, Timestamp):
     thumbnail = Column(String, nullable=True)
 
     orders = relationship("Order", secondary=order_menu_association, back_populates="items")
+    reviews = relationship("Review", back_populates="menu_item", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"{self.__class__.name}: {self.name}"
