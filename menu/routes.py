@@ -12,6 +12,7 @@ from core.conf import settings
 from core.database import get_db
 from menu.crud import create_menu, delete_menu, get_menu, get_menu_item, update_menu
 from menu.schemas import Menu, MenuCreate, MenuUpdate
+from menu.utils import generate_unique_filename
 
 router = APIRouter(prefix="/menu", tags=["menu"])
 
@@ -24,7 +25,7 @@ async def retrieve_menu(
     return menu
 
 THUMB_WIDTH = 300
-RETINA_FACTOR = 2
+RETINA_FACTOR = 1
 JPEG_QUALITY = 80
 WEBP_QUALITY = 80
 
@@ -37,13 +38,12 @@ async def create_new_menu_item(
     image: UploadFile = File(...),
     db: AsyncSession = Depends(get_db)
 ):
-    image_filename = f"{uuid4().hex}_{image.filename}"
+    image_filename = generate_unique_filename(image.filename)
     image_path = path.join(settings.MENU_IMAGES_DIR, image_filename)
 
     # stream-save the uploaded file to disk to avoid loading whole file into memory
-    with open(image_path, "wb") as out_f:
-        image.file.seek(0)
-        shutil.copyfileobj(image.file, out_f)
+    with open(image_path, "wb") as image_buffer:
+        image_buffer.write(image.file.read())
 
     # generate thumbnail(s)
     with Image.open(image_path) as img:
@@ -53,10 +53,10 @@ async def create_new_menu_item(
         aspect = img.width / img.height
         thumb_w = THUMB_WIDTH
         thumb_h = int(round(thumb_w / aspect))
-        thumb_filename = f"thumb_{uuid4().hex}_{image_filename}"
+        thumb_filename = f"thumb_{image_filename}"
         thumb_path = path.join(settings.MENU_THUMBNAILS_DIR, thumb_filename)
         thumb = img.copy()
-        thumb = thumb.resize((thumb_w, thumb_h), resample=Image.LANCZOS)
+        thumb = thumb.resize((thumb_w, thumb_h), resample=Image.Resampling.LANCZOS)
 
         thumb.save(thumb_path, format="JPEG", quality=JPEG_QUALITY, optimize=True)
     
