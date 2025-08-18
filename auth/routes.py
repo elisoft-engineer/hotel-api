@@ -1,12 +1,13 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, Path, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth.deps import self_or_staff_required, staff_required
 from core.database import get_db
 
-from .crud import get_users, get_user, get_user_by_email, create_user, update_user,\
+from .crud import get_users, get_user, get_user_by_email, create_user, toggle_active_status, update_user,\
     delete_user
 from .schemas import RefreshRequest, TokenResponse, User, UserCreate, UserSignin,\
     UserUpdate, AuthResponse, VerifyRequest
@@ -17,7 +18,7 @@ token_router = APIRouter(prefix="/token", tags=["auth"])
 @token_router.post("", status_code=status.HTTP_200_OK, response_model=AuthResponse)
 async def signin(user: UserSignin, db: AsyncSession = Depends(get_db)):
     db_user = await get_user_by_email(db, user.email)
-    if not db_user or not verify_password(user.password, str(db_user.password)):
+    if not (db_user and bool(db_user.is_active) and verify_password(user.password, str(db_user.password))):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid credentials"
         )
@@ -50,7 +51,7 @@ async def refresh_access_token(payload: RefreshRequest, db: AsyncSession = Depen
         )
 
     user = await get_user(db, user_id)
-    if not user or not getattr(user, "is_active", True):
+    if not user or not getattr(user, "is_active", False):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="User inactive or not found"
         )
@@ -96,17 +97,24 @@ async def create_new_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
 
 @user_router.get("", response_model=List[User], status_code=status.HTTP_200_OK)
 async def retrieve_user_list(
-    db: AsyncSession = Depends(get_db), offset: int | None = None, limit: int | None = None
+    _: User = Depends(staff_required),
+    db: AsyncSession = Depends(get_db),
+    offset: int | None = None,
+    limit: int | None = None
 ):
     users = await get_users(db, offset, limit)
     return users
 
 
 @user_router.get("/{user_id}", response_model=User, status_code=status.HTTP_200_OK)
-async def retrieve_user_info(user_id: UUID, db: AsyncSession = Depends(get_db)):
+async def retrieve_user_info(
+    user_id: UUID = Path(...),
+    _: User = Depends(self_or_staff_required),
+    db: AsyncSession = Depends(get_db)
+):
     user = await get_user(db, user_id)
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
 
 
@@ -116,7 +124,17 @@ async def update_user_info(
 ):
     updated_user = await update_user(db, user_id, user_update)
     if not updated_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return updated_user
+
+
+@user_router.patch("/{user_id}", status_code=status.HTTP_200_OK)
+async def toggle_user_active_status(
+    user_id: UUID, _: User = Depends(staff_required), db: AsyncSession = Depends(get_db)
+):
+    updated_user = await toggle_active_status(db, user_id)
+    if not updated_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return updated_user
 
 
@@ -124,5 +142,5 @@ async def update_user_info(
 async def delete_user_info(user_id: UUID, db: AsyncSession = Depends(get_db)):
     result = await delete_user(db, user_id)
     if not result:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return result
