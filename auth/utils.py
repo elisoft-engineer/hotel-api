@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Optional
 
 from fastapi import HTTPException, status
 from jose import jwt
@@ -37,12 +36,14 @@ def create_token(token_type: TokenType, data: dict, expires_delta: timedelta | N
     return encoded_jwt
 
 
-def decode_token(token: str) -> Optional[dict]:
+def decode_token(token: str) -> dict:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         return payload
-    except JWTError:
-        return None
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+    except (JWTClaimsError, JWTError):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
 
 def verify_token(token: str, token_type: TokenType) -> dict:
