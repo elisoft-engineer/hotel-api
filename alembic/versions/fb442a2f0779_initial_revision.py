@@ -1,8 +1,8 @@
 """Initial Revision
 
-Revision ID: e5c35ac7e0b6
+Revision ID: fb442a2f0779
 Revises: 
-Create Date: 2025-08-17 20:44:40.136142
+Create Date: 2025-08-18 12:46:32.759443
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = 'e5c35ac7e0b6'
+revision: str = 'fb442a2f0779'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -45,15 +45,6 @@ def upgrade() -> None:
     sa.Column('modified_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('notifications',
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('message', sa.String(), nullable=False),
-    sa.Column('user_id', sa.UUID(), nullable=False),
-    sa.Column('status', postgresql.ENUM('read', 'unread', name='notification_status', create_type=False), server_default=sa.text("'unread'::notification_status"), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('modified_at', sa.DateTime(timezone=True), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('users',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
@@ -67,6 +58,16 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
+    op.create_table('notifications',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('message', sa.String(), nullable=False),
+    sa.Column('user_id', sa.UUID(), nullable=False),
+    sa.Column('status', postgresql.ENUM('read', 'unread', name='notification_status', create_type=False), server_default=sa.text("'unread'::notification_status"), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('modified_at', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('orders',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('amount', sa.DECIMAL(), nullable=False),
@@ -103,9 +104,9 @@ def downgrade() -> None:
     op.drop_table('order_menu')
     op.drop_table('reviews')
     op.drop_table('orders')
+    op.drop_table('notifications')
     op.drop_index(op.f('ix_users_email'), table_name='users')
     op.drop_table('users')
-    op.drop_table('notifications')
     op.drop_table('messages')
     op.drop_index(op.f('ix_menu_name'), table_name='menu')
     op.drop_table('menu')
