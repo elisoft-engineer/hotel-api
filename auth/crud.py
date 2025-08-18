@@ -47,6 +47,17 @@ async def update_user(db: AsyncSession, user_id: UUID, user_update: schemas.User
     return user
 
 
+async def toggle_active_status(db: AsyncSession, user_id: UUID):
+    user = await get_user(db, user_id)
+    if not user:
+        return None
+    setattr(user, "is_active", not bool(user.is_active))
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
 async def delete_user(db: AsyncSession, user_id: UUID):
     user = await get_user(db, user_id)
     if not user:
