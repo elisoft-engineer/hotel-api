@@ -27,7 +27,7 @@ class Notification(Base, Timestamp):
         nullable=False
     )
 
-    user = relationship("User", back_populates="notificaltions")
+    user = relationship("User", back_populates="notifications")
 
     def __repr__(self):
         return f"{self.__class__.__name__}: {self.message}"
