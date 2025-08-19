@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.conf import settings
 from core.database import get_db
 from menu.crud import create_menu, delete_menu, get_menu, get_menu_item, update_menu
+from menu.models import MenuCategory
 from menu.schemas import Menu, MenuCreate, MenuUpdate
 from menu.utils import generate_unique_filename
 
@@ -34,7 +35,7 @@ async def create_new_menu_item(
     name: str = Form(...),
     description: str = Form(...),
     price: Decimal = Form(...),
-    category: str = Form(...),
+    category: MenuCategory = Form(...),
     image: UploadFile = File(...),
     db: AsyncSession = Depends(get_db)
 ):
@@ -90,9 +91,50 @@ async def retrieve_menu_item(menu_id: UUID, db: AsyncSession = Depends(get_db)):
 
 @router.put("/{menu_id}", response_model=Menu, status_code=status.HTTP_200_OK)
 async def update_menu_item(
-    menu_id: UUID, menu_update: MenuUpdate, db: AsyncSession = Depends(get_db)
+    menu_id: UUID,
+    name: str = Form(...),
+    description: str = Form(...),
+    price: Decimal = Form(...),
+    category: MenuCategory = Form(...),
+    image: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db)
 ):
-    updated_menu_item = await update_menu(db, menu_id, menu_update)
+    update_data = MenuUpdate(
+        name=name,
+        description=description,
+        price=price,
+        category=category,
+        image=None,
+        thumbnail=None
+    )
+
+    if image:
+        image_filename = generate_unique_filename(image.filename)
+        image_path = path.join(settings.MENU_IMAGES_DIR, image_filename)
+
+        # stream-save the uploaded file to disk to avoid loading whole file into memory
+        with open(image_path, "wb") as image_buffer:
+            image_buffer.write(image.file.read())
+
+        # generate thumbnail(s)
+        with Image.open(image_path) as img:
+            if img.mode not in ("RGB", "L"):
+                img = img.convert("RGB")
+
+            aspect = img.width / img.height
+            thumb_w = THUMB_WIDTH
+            thumb_h = int(round(thumb_w / aspect))
+            thumb_filename = f"thumb_{image_filename}"
+            thumb_path = path.join(settings.MENU_THUMBNAILS_DIR, thumb_filename)
+            thumb = img.copy()
+            thumb = thumb.resize((thumb_w, thumb_h), resample=Image.Resampling.LANCZOS)
+
+            thumb.save(thumb_path, format="JPEG", quality=JPEG_QUALITY, optimize=True)
+
+            update_data.image = image_path
+            update_data.thumbnail = thumb_path
+
+    updated_menu_item = await update_menu(db, menu_id, update_data)
     if not updated_menu_item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Menu item not found"
