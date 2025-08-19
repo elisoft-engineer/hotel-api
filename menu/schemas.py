@@ -1,14 +1,17 @@
 from decimal import Decimal
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel
+
+from menu.models import MenuCategory
 
 
 class MenuBase(BaseModel):
     name: str
     description: str
     price: Decimal
-    category: str
+    category: MenuCategory
 
 
 class MenuCreate(MenuBase):
@@ -17,7 +20,8 @@ class MenuCreate(MenuBase):
 
 
 class MenuUpdate(MenuBase):
-    pass
+    image: Optional[str]
+    thumbnail: Optional[str]
 
 
 class Menu(MenuBase):
