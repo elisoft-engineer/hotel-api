@@ -36,5 +36,5 @@ class Menu(Base, Timestamp):
     orders = relationship("Order", secondary=order_menu_association, back_populates="items")
     reviews = relationship("Review", back_populates="menu_item", cascade="all, delete-orphan")
 
-    def __repr__(self):
-        return f"{self.__class__.name}: {self.name}"
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}(name='{self.name}', price={self.price})>"
