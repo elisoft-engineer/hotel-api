@@ -23,17 +23,17 @@ async def signin(user: UserSignin, db: AsyncSession = Depends(get_db)):
             status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid credentials"
         )
     
-    data = {"user": User(
-        id=db_user.id,
-        email=db_user.email,
-        first_name=str(db_user.first_name),
-        last_name=str(db_user.last_name),
-        is_active=bool(db_user.is_active),
-        is_staff=bool(db_user.is_staff)
-    )}
+    data = {"user": {
+        "id": str(db_user.id),
+        "email": str(db_user.email),
+        "first_name": str(db_user.first_name),
+        "last_name": str(db_user.last_name),
+        "is_active": bool(db_user.is_active),
+        "is_staff": bool(db_user.is_staff)
+    }}
 
     access_token = create_token(TokenType.ACCESS, data)
-    refresh_token = create_token(TokenType.REFRESH, {'sub': data['user'].id})
+    refresh_token = create_token(TokenType.REFRESH, {'sub': data['user']['id']})
 
     return AuthResponse(
         access_token=access_token, refresh_token=refresh_token, token_type='Bearer'
