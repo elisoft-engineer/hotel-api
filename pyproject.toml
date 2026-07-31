@@ -1,31 +1,30 @@
 [project]
 name = "hotel-api"
 version = "0.1.0"
-description = "'An API for handling CRUD operations in a hotel environment'"
+description = "An asynchronous API for hotel management"
 authors = [
     {name = "Elkana Maina",email = "elisoft.engineer@gmail.com"}
 ]
-license = {text = "Proprietary"}
+license = "proprietary"
 readme = "README.md"
-requires-python = ">=3.12,<4.0"
+requires-python = ">=3.14"
 dependencies = [
-    "alembic (>=1.16.4,<2.0.0)",
-    "asyncpg (>=0.30.0,<0.31.0)",
+    "alembic (>=1.18.5,<2.0.0)",
+    "asyncpg (>=0.31.0,<0.32.0)",
     "databases (>=0.9.0,<0.10.0)",
-    "fastapi (>=0.116.1,<0.117.0)",
+    "fastapi (>=0.141.1,<0.142.0)",
     "passlib (>=1.7.4,<2.0.0)",
-    "python-dotenv (>=1.1.1,<2.0.0)",
-    "python-multipart (>=0.0.20,<0.0.21)",
-    "pyyaml (>=6.0.2,<7.0.0)",
-    "sqlalchemy (>=2.0.43,<3.0.0)",
-    "uvicorn (>=0.35.0,<0.36.0)",
-    "email-validator (>=2.2.0,<3.0.0)",
-    "pillow (>=11.3.0,<12.0.0)",
-    "pydantic-settings (>=2.10.1,<3.0.0)",
-    "alembic-postgresql-enum (>=1.8.0,<2.0.0)",
-    "python-jose[cryptography] (>=3.5.0,<4.0.0)",
-    "typer (>=0.16.0,<0.17.0)",
-    "alchemist-shell (>=0.1.1,<0.2.0)",
+    "python-dotenv (>=1.2.2,<2.0.0)",
+    "python-multipart (>=0.0.32,<0.0.33)",
+    "pyyaml (>=6.0.3,<7.0.0)",
+    "sqlalchemy (>=2.0.51,<3.0.0)",
+    "uvicorn (>=0.52.0,<0.53.0)",
+    "email-validator (>=2.3.0,<3.0.0)",
+    "pillow (>=12.3.0,<13.0.0)",
+    "pydantic-settings (>=2.14.2,<3.0.0)",
+    "alembic-postgresql-enum (>=1.10.0,<2.0.0)",
+    "python-jose (>=3.5.0,<4.0.0)",
+    "typer (>=0.27.0,<0.28.0)"
 ]
 
 
@@ -33,9 +32,8 @@ dependencies = [
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.group.dev.dependencies]
-fastapi-standalone-docs = "^0.2.0"
-ruff = "^0.12.8"
-
-
-[tool.poetry.dependencies]
+[dependency-groups]
+dev = [
+    "alchemist-shell (>=0.1.5,<0.2.0)",
+    "ruff (>=0.16.1,<0.17.0)"
+]
