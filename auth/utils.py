@@ -4,19 +4,30 @@ from enum import Enum
 from fastapi import HTTPException, status
 from jose import jwt
 from jose.exceptions import JWTError, JWTClaimsError, ExpiredSignatureError
-from passlib.context import CryptContext
 
 from core.conf import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
+
+# Initialize the Argon2id hasher with secure default parameters
+ph = PasswordHasher()
 
 
-def get_password_hash(password: str):
-    return pwd_context.hash(password)
+def hash_password(password: str) -> str:
+    """Hashes a plain text password using Argon2id."""
+    return ph.hash(password)
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+def verify_password(password: str, hashed: str) -> bool:
+    """Verifies a plain text password against an Argon2id hash."""
+    try:
+        # argon2 expects (hash, password)
+        ph.verify(hashed, password)
+        return True
+    except VerifyMismatchError:
+        return False
+
 
 
 class TokenType(Enum):
