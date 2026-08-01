@@ -13,7 +13,6 @@ dependencies = [
     "asyncpg (>=0.31.0,<0.32.0)",
     "databases (>=0.9.0,<0.10.0)",
     "fastapi (>=0.141.1,<0.142.0)",
-    "passlib (>=1.7.4,<2.0.0)",
     "python-dotenv (>=1.2.2,<2.0.0)",
     "python-multipart (>=0.0.32,<0.0.33)",
     "pyyaml (>=6.0.3,<7.0.0)",
@@ -24,7 +23,8 @@ dependencies = [
     "pydantic-settings (>=2.14.2,<3.0.0)",
     "alembic-postgresql-enum (>=1.10.0,<2.0.0)",
     "python-jose (>=3.5.0,<4.0.0)",
-    "typer (>=0.27.0,<0.28.0)"
+    "typer (>=0.27.0,<0.28.0)",
+    "argon2-cffi (>=25.1.0,<26.0.0)",
 ]
 
 
@@ -35,5 +35,9 @@ build-backend = "poetry.core.masonry.api"
 [dependency-groups]
 dev = [
     "ruff (>=0.16.1,<0.17.0)",
-    "alchemist-shell (>=0.1.9,<0.2.0)",
+    "alchemist-shell @ file:///home/elkana/Dev/packages/alchemist-shell",
 ]
+
+[tool.poetry.group.dev.dependencies]
+alchemist-shell = {develop = true}
+
