@@ -34,6 +34,6 @@ build-backend = "poetry.core.masonry.api"
 
 [dependency-groups]
 dev = [
-    "alchemist-shell (>=0.1.5,<0.2.0)",
-    "ruff (>=0.16.1,<0.17.0)"
+    "ruff (>=0.16.1,<0.17.0)",
+    "alchemist-shell (>=0.1.9,<0.2.0)",
 ]
